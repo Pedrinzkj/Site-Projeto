@@ -1,0 +1,3590 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EstudaPraValer - Organizador de Estudos</title>
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          animation: {
+            'shake': 'shake 0.4s ease-in-out',
+            'fade-in': 'fadeIn 0.25s ease-out',
+          },
+          keyframes: {
+            shake: {
+              '0%, 100%': { transform: 'translateX(0)' },
+              '20%, 60%': { transform: 'translateX(-6px)' },
+              '40%, 80%': { transform: 'translateX(6px)' },
+            },
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'translateY(6px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Inicialização Imediata do Tema (Evita Flash) -->
+  <script>
+    (function() {
+      try {
+        const temaSalvo = localStorage.getItem('estudapravaler_tema');
+        const prefereEscuro = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (temaSalvo === 'dark' || (!temaSalvo && prefereEscuro)) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <style>
+    /* Estilo de rolagem suave */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* Ocultar barra de rolagem horizontal mantendo deslizamento no mobile */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* ======================================================== */
+    /* MODO ESCURO (DARK MODE) COMPLETO E AUTOMÁTICO            */
+    /* ======================================================== */
+    html.dark {
+      color-scheme: dark;
+    }
+    html.dark ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    html.dark ::-webkit-scrollbar-thumb {
+      background: #334155;
+    }
+    html.dark ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+    html.dark body {
+      background: linear-gradient(to bottom right, #090d16, #0f172a, #131127) !important;
+      color: #f1f5f9 !important;
+    }
+    html.dark header {
+      background-color: rgba(15, 23, 42, 0.92) !important;
+      border-color: #1e293b !important;
+    }
+    html.dark footer {
+      background-color: rgba(15, 23, 42, 0.85) !important;
+      border-color: #1e293b !important;
+    }
+    html.dark footer p.text-slate-700 {
+      color: #cbd5e1 !important;
+    }
+    html.dark .bg-white {
+      background-color: #1e293b !important;
+      color: #f1f5f9;
+    }
+    html.dark .bg-slate-50,
+    html.dark .bg-slate-50\/50,
+    html.dark .bg-slate-50\/70 {
+      background-color: #0f172a !important;
+    }
+    html.dark .bg-slate-100 {
+      background-color: #334155 !important;
+      color: #e2e8f0 !important;
+    }
+    html.dark .text-slate-900 {
+      color: #f8fafc !important;
+    }
+    html.dark .text-slate-800 {
+      color: #f1f5f9 !important;
+    }
+    html.dark .text-slate-700 {
+      color: #e2e8f0 !important;
+    }
+    html.dark .text-slate-600 {
+      color: #cbd5e1 !important;
+    }
+    html.dark .text-slate-500 {
+      color: #94a3b8 !important;
+    }
+    html.dark .border-slate-100,
+    html.dark .border-slate-200,
+    html.dark .border-slate-200\/70,
+    html.dark .border-slate-200\/80,
+    html.dark .border-slate-200\/90,
+    html.dark .border-slate-300 {
+      border-color: #334155 !important;
+    }
+    html.dark input[type="text"],
+    html.dark input[type="number"],
+    html.dark input[type="date"],
+    html.dark input[type="time"],
+    html.dark select,
+    html.dark textarea {
+      background-color: #0f172a !important;
+      color: #f8fafc !important;
+      border-color: #334155 !important;
+    }
+    html.dark input::placeholder,
+    html.dark textarea::placeholder {
+      color: #64748b !important;
+    }
+    /* Botões de navegação no modo escuro */
+    html.dark .tab-btn.text-slate-600:hover {
+      color: #818cf8 !important;
+      background-color: #334155 !important;
+    }
+    html.dark .tab-btn.bg-indigo-50 {
+      background-color: rgba(79, 70, 229, 0.25) !important;
+      color: #c7d2fe !important;
+      border-color: rgba(99, 102, 241, 0.4) !important;
+    }
+    /* Modais no modo escuro */
+    html.dark #modal-detalhes-materia > div,
+    html.dark #modal-form-materia > div,
+    html.dark #modal-form-tarefa > div,
+    html.dark #modal-form-cronograma > div,
+    html.dark #modal-form-revisao > div,
+    html.dark #modal-pomodoro-custom > div,
+    html.dark #modal-confirmacao > div {
+      background-color: #1e293b !important;
+      border-color: #334155 !important;
+      color: #f1f5f9 !important;
+    }
+    /* Badges com transparência elegante no tema escuro */
+    html.dark .bg-indigo-50,
+    html.dark .bg-indigo-100\/80 {
+      background-color: rgba(79, 70, 229, 0.2) !important;
+      color: #c7d2fe !important;
+      border-color: rgba(99, 102, 241, 0.35) !important;
+    }
+    html.dark .bg-rose-50,
+    html.dark .bg-rose-100 {
+      background-color: rgba(225, 29, 72, 0.2) !important;
+      color: #fecdd3 !important;
+      border-color: rgba(244, 63, 94, 0.35) !important;
+    }
+    html.dark .bg-amber-50,
+    html.dark .bg-amber-100 {
+      background-color: rgba(217, 119, 6, 0.2) !important;
+      color: #fde68a !important;
+      border-color: rgba(245, 158, 11, 0.35) !important;
+    }
+    html.dark .bg-emerald-50,
+    html.dark .bg-emerald-100 {
+      background-color: rgba(5, 150, 105, 0.2) !important;
+      color: #a7f3d0 !important;
+      border-color: rgba(16, 185, 129, 0.35) !important;
+    }
+    html.dark .bg-violet-50,
+    html.dark .bg-violet-100 {
+      background-color: rgba(124, 58, 237, 0.2) !important;
+      color: #ddd6fe !important;
+      border-color: rgba(139, 92, 246, 0.35) !important;
+    }
+    /* Botões auxiliares e de fechar modal */
+    html.dark button.bg-slate-100 {
+      background-color: #334155 !important;
+      color: #f1f5f9 !important;
+    }
+    html.dark button.bg-slate-100:hover {
+      background-color: #475569 !important;
+    }
+    html.dark button.bg-white {
+      background-color: #1e293b !important;
+      color: #f1f5f9 !important;
+      border-color: #334155 !important;
+    }
+    html.dark button.bg-white:hover {
+      background-color: #334155 !important;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-slate-100 to-indigo-50/40 text-slate-800 min-h-screen font-sans antialiased flex flex-col">
+
+  <!-- ========================================== -->
+  <!-- BARRA DE NAVEGAÇÃO SUPERIOR (HEADER & TABS) -->
+  <!-- ========================================== -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/90 shadow-2xs">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 sm:h-20 gap-3">
+        
+        <!-- Logo e Título -->
+        <a href="javascript:void(0)" onclick="trocarAba('dashboard')" class="flex items-center gap-2.5 sm:gap-3 shrink-0 group">
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white flex items-center justify-center shadow-md shadow-indigo-200 group-hover:scale-105 transition-transform duration-200">
+            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+          <div>
+            <span class="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900 block leading-tight">
+              EstudaPraValer
+            </span>
+            <span class="text-[11px] font-semibold text-indigo-600 tracking-wide block uppercase">
+              Organizador de Estudos
+            </span>
+          </div>
+        </a>
+
+        <!-- Botão Ação Rápida: Tema, Nova Matéria, Nova Tarefa -->
+        <div class="flex items-center gap-2">
+          <!-- Botão Modo Escuro / Claro -->
+          <button 
+            type="button" 
+            id="btn-tema" 
+            onclick="alternarTema()" 
+            class="p-2 sm:px-3 sm:py-2 rounded-xl border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-700 flex items-center gap-1.5 text-xs sm:text-sm font-semibold shadow-2xs hover:shadow-xs transition-all active:scale-95 cursor-pointer"
+            title="Alternar entre modo claro e escuro"
+            aria-label="Alternar modo escuro ou claro"
+          >
+            <span id="icone-tema" class="text-base sm:text-sm">🌙</span>
+            <span id="texto-tema" class="hidden md:inline">Tema</span>
+          </button>
+
+          <button 
+            type="button" 
+            onclick="abrirModalNovaMateria()" 
+            class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold shadow-xs hover:shadow transition-all active:scale-95 cursor-pointer"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+            </svg>
+            <span>+ Matéria</span>
+          </button>
+
+          <button 
+            type="button" 
+            onclick="abrirModalNovaTarefa()" 
+            class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-violet-50 hover:bg-violet-100 text-violet-700 border border-violet-200 text-xs sm:text-sm font-semibold transition-all active:scale-95 cursor-pointer"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+            </svg>
+            <span>+ Tarefa</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Menu de Abas Horizontal (Responsivo com Scroll no mobile) -->
+      <nav class="flex items-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar py-2 border-t border-slate-100 text-xs sm:text-sm font-semibold" aria-label="Navegação Principal">
+        <button onclick="trocarAba('dashboard')" id="nav-dashboard" class="tab-btn px-3 py-2 rounded-xl transition-all whitespace-nowrap flex items-center gap-1.5 text-indigo-700 bg-indigo-50 border border-indigo-200/80 shadow-2xs">
+          <span>🏠</span> <span>Visão Geral</span>
+        </button>
+        <button onclick="trocarAba('materias')" id="nav-materias" class="tab-btn px-3 py-2 rounded-xl transition-all whitespace-nowrap flex items-center gap-1.5 text-slate-600 hover:text-indigo-600 hover:bg-slate-100">
+          <span>📚</span> <span>Matérias</span>
+        </button>
+        <button onclick="trocarAba('tarefas')" id="nav-tarefas" class="tab-btn px-3 py-2 rounded-xl transition-all whitespace-nowrap flex items-center gap-1.5 text-slate-600 hover:text-indigo-600 hover:bg-slate-100">
+          <span>📝</span> <span>Tarefas</span>
+        </button>
+        <button onclick="trocarAba('cronograma')" id="nav-cronograma" class="tab-btn px-3 py-2 rounded-xl transition-all whitespace-nowrap flex items-center gap-1.5 text-slate-600 hover:text-indigo-600 hover:bg-slate-100">
+          <span>📅</span> <span>Cronograma</span>
+        </button>
+        <button onclick="trocarAba('pomodoro')" id="nav-pomodoro" class="tab-btn px-3 py-2 rounded-xl transition-all whitespace-nowrap flex items-center gap-1.5 text-slate-600 hover:text-indigo-600 hover:bg-slate-100">
+          <span>⏱️</span> <span>Pomodoro</span>
+        </button>
+        <button onclick="trocarAba('desempenho')" id="nav-desempenho" class="tab-btn px-3 py-2 rounded-xl transition-all whitespace-nowrap flex items-center gap-1.5 text-slate-600 hover:text-indigo-600 hover:bg-slate-100">
+          <span>📊</span> <span>Desempenho</span>
+        </button>
+        <button onclick="trocarAba('revisoes')" id="nav-revisoes" class="tab-btn px-3 py-2 rounded-xl transition-all whitespace-nowrap flex items-center gap-1.5 text-slate-600 hover:text-indigo-600 hover:bg-slate-100">
+          <span>🧠</span> <span>Revisões</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ========================================== -->
+  <!-- CORPO PRINCIPAL COM CONTEÚDO DAS ABAS     -->
+  <!-- ========================================== -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
+
+    <!-- ======================================================== -->
+    <!-- ABA 1: VISÃO GERAL (DASHBOARD)                          -->
+    <!-- ======================================================== -->
+    <section id="view-dashboard" class="space-y-8">
+      
+      <!-- Cabeçalho Explicativo -->
+      <div class="text-center sm:text-left space-y-2">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          Visão Geral dos Seus Estudos 🚀
+        </h1>
+        <p class="text-sm sm:text-base text-slate-600 max-w-3xl leading-relaxed">
+          Acompanhe seu progresso, prazos de provas e tarefas, e gerencie seu tempo com eficiência para alcançar notas máximas sem sobrecarga.
+        </p>
+      </div>
+
+      <!-- 1. CARDS DE ESTATÍSTICAS (5 Métricas Dinâmicas) -->
+      <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+        
+        <!-- Total de Matérias -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between">
+          <div class="flex items-center justify-between text-indigo-600 mb-2">
+            <span class="text-2xl sm:text-3xl">📚</span>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">Grade</span>
+          </div>
+          <div>
+            <div id="stat-total-materias" class="text-2xl sm:text-3xl font-extrabold text-slate-900">0</div>
+            <div class="text-xs sm:text-sm font-medium text-slate-500 mt-0.5">Matérias ativas</div>
+          </div>
+        </div>
+
+        <!-- Tarefas Pendentes -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between">
+          <div class="flex items-center justify-between text-amber-600 mb-2">
+            <span class="text-2xl sm:text-3xl">📝</span>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">A fazer</span>
+          </div>
+          <div>
+            <div id="stat-tarefas-pendentes" class="text-2xl sm:text-3xl font-extrabold text-amber-600">0</div>
+            <div class="text-xs sm:text-sm font-medium text-slate-500 mt-0.5">Tarefas pendentes</div>
+          </div>
+        </div>
+
+        <!-- Tarefas Concluídas -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between">
+          <div class="flex items-center justify-between text-emerald-600 mb-2">
+            <span class="text-2xl sm:text-3xl">✅</span>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">Feito</span>
+          </div>
+          <div>
+            <div id="stat-tarefas-concluidas" class="text-2xl sm:text-3xl font-extrabold text-emerald-600">0</div>
+            <div class="text-xs sm:text-sm font-medium text-slate-500 mt-0.5">Tarefas concluídas</div>
+          </div>
+        </div>
+
+        <!-- Horas Estudadas -->
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between">
+          <div class="flex items-center justify-between text-violet-600 mb-2">
+            <span class="text-2xl sm:text-3xl">⏱️</span>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-violet-700 bg-violet-50 px-2 py-0.5 rounded-md border border-violet-200">Foco</span>
+          </div>
+          <div>
+            <div id="stat-horas-estudadas" class="text-2xl sm:text-3xl font-extrabold text-violet-700">0h00</div>
+            <div class="text-xs sm:text-sm font-medium text-slate-500 mt-0.5">Tempo estudado</div>
+          </div>
+        </div>
+
+        <!-- Progresso Geral -->
+        <div class="col-span-2 lg:col-span-1 bg-gradient-to-br from-indigo-600 to-violet-700 text-white rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col justify-between">
+          <div class="flex items-center justify-between text-white/90 mb-2">
+            <span class="text-2xl sm:text-3xl">🎯</span>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-white/90 bg-white/20 px-2 py-0.5 rounded-md">Geral</span>
+          </div>
+          <div>
+            <div id="stat-progresso-geral" class="text-2xl sm:text-3xl font-extrabold text-white">0%</div>
+            <div class="text-xs sm:text-sm font-medium text-indigo-100 mt-0.5">Progresso total</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 8. SEÇÃO: PRÓXIMOS PRAZOS (Provas e Tarefas) -->
+      <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-xs space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+              <span>⚠️</span> Próximos Prazos & Provas
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-500">Eventos ordenados pela data mais urgente para você se antecipar.</p>
+          </div>
+          <button onclick="trocarAba('tarefas')" class="text-xs sm:text-sm font-semibold text-indigo-600 hover:text-indigo-800 transition-colors">
+            Ver todas as tarefas &rarr;
+          </button>
+        </div>
+
+        <!-- Lista de Próximos Prazos -->
+        <div id="lista-proximos-prazos" class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+          <!-- Inserido dinamicamente -->
+        </div>
+      </div>
+
+      <!-- 3 CARDS DE DESTAQUE COM DICAS RÁPIDAS (Preservados e Elegantes) -->
+      <div>
+        <div class="mb-3">
+          <h2 class="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
+            <span>💡</span> Dicas Rápidas de Alta Performance
+          </h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Dica 1 -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-xs transition-all">
+            <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center mb-3">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">Cronograma</span>
+            <h3 class="text-base font-bold text-slate-800 mt-2 mb-1">Foco nos prazos</h3>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Mapeie avaliações com antecedência. Ataque primeiro matérias mais difíceis para evitar noites em claro na véspera.
+            </p>
+          </div>
+          <!-- Dica 2 -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-xs transition-all">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center mb-3">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">Produtividade</span>
+            <h3 class="text-base font-bold text-slate-800 mt-2 mb-1">Método Pomodoro</h3>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Ciclos de 25 min de foco e 5 min de descanso mantêm o cérebro fresco e reduzem a procrastinação com estudos longos.
+            </p>
+          </div>
+          <!-- Dica 3 -->
+          <div class="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-xs transition-all">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center mb-3">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+            </div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">Memorização</span>
+            <h3 class="text-base font-bold text-slate-800 mt-2 mb-1">Revisão ativa</h3>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Pratique autoexplicação e resolva exercícios com frequência. A recordação ativa é 300% mais eficaz que reler resumos.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- ABA 2: MINHAS MATÉRIAS & CADASTRO                       -->
+    <!-- ======================================================== -->
+    <section id="view-materias" class="hidden space-y-6">
+      
+      <!-- Topo: Título e Botão de Ação -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Minhas Matérias & Prioridades
+          </h1>
+          <p class="text-sm text-slate-600">
+            Gerencie cada disciplina, acompanhe o progresso de conteúdos e inicie sessões de estudo.
+          </p>
+        </div>
+        <button 
+          onclick="abrirModalNovaMateria()" 
+          class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-sm hover:shadow active:scale-95 transition-all cursor-pointer shrink-0"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+          </svg>
+          <span>Cadastrar Nova Matéria</span>
+        </button>
+      </div>
+
+      <!-- Barra de Filtros e Busca Rápida -->
+      <div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-2xs flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+        <div class="relative flex-1">
+          <input 
+            type="text" 
+            id="busca-materia" 
+            oninput="renderizarMaterias()" 
+            placeholder="Buscar matéria por nome ou professor..." 
+            class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          >
+          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-semibold text-slate-500 shrink-0">Prioridade:</span>
+          <select 
+            id="filtro-prioridade-materia" 
+            onchange="renderizarMaterias()" 
+            class="px-3 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer"
+          >
+            <option value="todas">Todas</option>
+            <option value="Alta">Alta</option>
+            <option value="Média">Média</option>
+            <option value="Baixa">Baixa</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Grid de Cards das Matérias -->
+      <div id="grid-materias" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+        <!-- Renderizado via JS -->
+      </div>
+
+      <!-- Estado Vazio para Matérias -->
+      <div id="estado-vazio-materias" class="hidden bg-white rounded-3xl p-10 border border-slate-200/90 text-center space-y-3">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center text-3xl">
+          📚
+        </div>
+        <h3 class="text-lg font-bold text-slate-800">Você ainda não cadastrou nenhuma matéria</h3>
+        <p class="text-sm text-slate-500 max-w-md mx-auto">
+          Comece adicionando sua primeira matéria para gerenciar os conteúdos, provas e tarefas de cada disciplina!
+        </p>
+        <button 
+          onclick="abrirModalNovaMateria()" 
+          class="mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-xs transition-all cursor-pointer"
+        >
+          + Adicionar Primeira Matéria
+        </button>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- ABA 3: MINHAS TAREFAS                                   -->
+    <!-- ======================================================== -->
+    <section id="view-tarefas" class="hidden space-y-6">
+      
+      <!-- Topo: Título e Botão de Ação -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Minhas Tarefas & Atividades
+          </h1>
+          <p class="text-sm text-slate-600">
+            Organize listas de exercícios, trabalhos, leituras e revisões com datas e prioridades.
+          </p>
+        </div>
+        <button 
+          onclick="abrirModalNovaTarefa()" 
+          class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-sm hover:shadow active:scale-95 transition-all cursor-pointer shrink-0"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+          </svg>
+          <span>Nova Tarefa</span>
+        </button>
+      </div>
+
+      <!-- Barra de Filtros Cruzados (Status, Matéria, Prioridade) -->
+      <div class="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-2xs space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          
+          <!-- Filtro por Status (Tabs) -->
+          <div class="inline-flex p-1 rounded-xl bg-slate-100 text-xs font-bold" role="group">
+            <button onclick="setFiltroStatusTarefa('todas')" id="filtro-status-todas" class="px-3.5 py-1.5 rounded-lg bg-white text-indigo-700 shadow-2xs transition-all">
+              Todas
+            </button>
+            <button onclick="setFiltroStatusTarefa('pendentes')" id="filtro-status-pendentes" class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all">
+              Pendentes
+            </button>
+            <button onclick="setFiltroStatusTarefa('concluidas')" id="filtro-status-concluidas" class="px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all">
+              Concluídas
+            </button>
+          </div>
+
+          <!-- Filtro por Matéria e Prioridade -->
+          <div class="flex flex-wrap items-center gap-2">
+            <select 
+              id="filtro-materia-tarefa" 
+              onchange="renderizarTarefas()" 
+              class="px-3 py-1.5 rounded-xl border border-slate-300 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer"
+            >
+              <option value="todas">Todas as matérias</option>
+              <!-- Preenchido via JS -->
+            </select>
+
+            <select 
+              id="filtro-prioridade-tarefa" 
+              onchange="renderizarTarefas()" 
+              class="px-3 py-1.5 rounded-xl border border-slate-300 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer"
+            >
+              <option value="todas">Todas prioridades</option>
+              <option value="Alta">Prioridade: Alta</option>
+              <option value="Média">Prioridade: Média</option>
+              <option value="Baixa">Prioridade: Baixa</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de Tarefas -->
+      <div id="lista-tarefas" class="space-y-3">
+        <!-- Inserido dinamicamente -->
+      </div>
+
+      <!-- Estado Vazio para Tarefas -->
+      <div id="estado-vazio-tarefas" class="hidden bg-white rounded-3xl p-10 border border-slate-200/90 text-center space-y-3">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center text-3xl">
+          📝
+        </div>
+        <h3 id="texto-vazio-tarefas" class="text-lg font-bold text-slate-800">Nenhuma tarefa encontrada</h3>
+        <p class="text-sm text-slate-500 max-w-md mx-auto">
+          Adicione novas tarefas para manter suas obrigações acadêmicas e revisões sempre em dia.
+        </p>
+        <button 
+          onclick="abrirModalNovaTarefa()" 
+          class="mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-xs transition-all cursor-pointer"
+        >
+          + Criar Nova Tarefa
+        </button>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- ABA 4: CRONOGRAMA DE ESTUDOS SEMANAL                     -->
+    <!-- ======================================================== -->
+    <section id="view-cronograma" class="hidden space-y-6">
+      
+      <!-- Topo: Título e Botão de Ação -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Cronograma Semanal de Estudos 📅
+          </h1>
+          <p class="text-sm text-slate-600">
+            Planeje sua semana de estudos distribuindo matérias e horários específicos para cada dia.
+          </p>
+        </div>
+        <button 
+          onclick="abrirModalNovoCronograma()" 
+          class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-sm hover:shadow active:scale-95 transition-all cursor-pointer shrink-0"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+          </svg>
+          <span>+ Agendar Estudo</span>
+        </button>
+      </div>
+
+      <!-- Agenda Semanal (Segunda a Domingo) -->
+      <div id="grid-cronograma-semanal" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <!-- Preenchido via JS com os 7 dias da semana -->
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- ABA 5: POMODORO TIMER                                   -->
+    <!-- ======================================================== -->
+    <section id="view-pomodoro" class="hidden space-y-6">
+      
+      <div class="max-w-2xl mx-auto space-y-6">
+        <div class="text-center space-y-2">
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Temporizador Pomodoro ⏱️
+          </h1>
+          <p class="text-sm text-slate-600">
+            Estude com foco absoluto e registre seu tempo automaticamente no gráfico de desempenho!
+          </p>
+        </div>
+
+        <!-- Card do Timer -->
+        <div class="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-md text-center space-y-6 relative overflow-hidden">
+          
+          <!-- Seletor da Matéria em Foco -->
+          <div class="max-w-xs mx-auto">
+            <label for="pomodoro-materia-select" class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+              Matéria da Sessão:
+            </label>
+            <select 
+              id="pomodoro-materia-select" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer"
+            >
+              <!-- Preenchido via JS -->
+            </select>
+          </div>
+
+          <!-- Modos Pomodoro (25/5, 50/10, Personalizado) -->
+          <div class="inline-flex p-1 rounded-2xl bg-slate-100 text-xs sm:text-sm font-bold gap-1" role="group">
+            <button 
+              type="button" 
+              onclick="configurarModoPomodoro(25, 5, 'padrão')" 
+              id="pomo-modo-25" 
+              class="px-4 py-2 rounded-xl bg-white text-indigo-700 shadow-2xs transition-all"
+            >
+              25 / 5 min
+            </button>
+            <button 
+              type="button" 
+              onclick="configurarModoPomodoro(50, 10, 'longo')" 
+              id="pomo-modo-50" 
+              class="px-4 py-2 rounded-xl text-slate-600 hover:text-slate-900 transition-all"
+            >
+              50 / 10 min
+            </button>
+            <button 
+              type="button" 
+              onclick="abrirModalPomodoroPersonalizado()" 
+              id="pomo-modo-custom" 
+              class="px-4 py-2 rounded-xl text-slate-600 hover:text-slate-900 transition-all"
+            >
+              Personalizado ⚙️
+            </button>
+          </div>
+
+          <!-- Etiqueta do Ciclo Atual -->
+          <div>
+            <span id="pomodoro-badge-estado" class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+              <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+              Ciclo de Foco Total
+            </span>
+          </div>
+
+          <!-- Display Gigante do Relógio -->
+          <div class="py-2">
+            <div id="pomodoro-display" class="text-6xl sm:text-7xl font-extrabold text-slate-900 tracking-tight font-mono select-none">
+              25:00
+            </div>
+            <div class="w-full max-w-sm mx-auto bg-slate-100 h-2.5 rounded-full mt-4 overflow-hidden">
+              <div id="pomodoro-barra-progresso" class="bg-indigo-600 h-full w-0 transition-all duration-300"></div>
+            </div>
+          </div>
+
+          <!-- Botões de Controle: Iniciar, Pausar, Reiniciar -->
+          <div class="flex items-center justify-center gap-3 pt-2">
+            <button 
+              id="btn-pomodoro-toggle" 
+              onclick="togglePomodoro()" 
+              class="px-8 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-base shadow-md shadow-indigo-200 transition-all cursor-pointer flex items-center gap-2"
+            >
+              <span id="pomodoro-btn-icone">▶</span>
+              <span id="pomodoro-btn-texto">Iniciar Foco</span>
+            </button>
+
+            <button 
+              onclick="reiniciarPomodoro()" 
+              class="px-5 py-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm transition-all active:scale-95 cursor-pointer flex items-center gap-1.5"
+              title="Reiniciar temporizador"
+            >
+              <span>↻</span>
+              <span>Reiniciar</span>
+            </button>
+          </div>
+
+          <!-- Notificação de Sessão Concluída -->
+          <div id="pomodoro-alerta-fim" class="hidden p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 animate-fade-in">
+            <p class="font-bold text-base">🎉 Parabéns! Sessão de Foco Concluída!</p>
+            <p class="text-xs sm:text-sm text-emerald-700 mt-0.5">
+              Seu tempo estudado foi somado automaticamente às suas estatísticas gerais.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- ABA 6: DESEMPENHO & MÉTRICAS                            -->
+    <!-- ======================================================== -->
+    <section id="view-desempenho" class="hidden space-y-6">
+      
+      <div class="space-y-2">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          Desempenho & Análise dos Estudos 📊
+        </h1>
+        <p class="text-sm text-slate-600">
+          Acompanhe suas estatísticas de aprendizado, matérias críticas e o histórico semanal de horas estudadas.
+        </p>
+      </div>
+
+      <!-- Grid com Resumo dos Indicadores -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-2xs">
+          <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Progresso Geral</div>
+          <div id="desempenho-progresso-geral" class="text-3xl font-extrabold text-indigo-600">0%</div>
+          <p class="text-xs text-slate-500 mt-1">Média dos conteúdos e tarefas</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-2xs">
+          <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Horas Estudadas</div>
+          <div id="desempenho-horas-totais" class="text-3xl font-extrabold text-violet-600">0h00</div>
+          <p class="text-xs text-slate-500 mt-1">Registradas nas sessões</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-2xs">
+          <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Tarefas Concluídas</div>
+          <div id="desempenho-tarefas-ratio" class="text-3xl font-extrabold text-emerald-600">0 / 0</div>
+          <p class="text-xs text-slate-500 mt-1">Taxa de conclusão de tarefas</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-2xs">
+          <div class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Matérias Ativas</div>
+          <div id="desempenho-materias-ativas" class="text-3xl font-extrabold text-slate-900">0</div>
+          <p class="text-xs text-slate-500 mt-1">Disciplinas cadastradas</p>
+        </div>
+
+      </div>
+
+      <!-- Gráfico Semanal de Horas Estudadas (Segunda a Domingo) -->
+      <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-xs space-y-4">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <span>📈</span> Horas Estudadas Durante a Semana
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500">Distribuição do tempo de foco acumulado por dia da semana atual.</p>
+        </div>
+
+        <!-- Gráfico em Barras Estilizadas com Tailwind -->
+        <div id="grafico-barras-semana" class="grid grid-cols-7 gap-2 sm:gap-4 pt-6 pb-2 items-end h-56 border-b border-slate-100">
+          <!-- Renderizado via JS -->
+        </div>
+
+        <div class="text-right text-xs text-slate-400">
+          * Horas registradas através do Pomodoro e conclusão de blocos de estudo.
+        </div>
+      </div>
+
+      <!-- Destaque: Matérias com Maior Progresso vs. Precisam de Atenção -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        <!-- Maior Progresso -->
+        <div class="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-2xs space-y-3">
+          <div class="flex items-center gap-2 text-emerald-600">
+            <span class="text-xl">🏆</span>
+            <h3 class="text-base font-bold text-slate-900">Matérias com Maior Progresso</h3>
+          </div>
+          <div id="lista-materias-top" class="space-y-2.5">
+            <!-- Inserido dinamicamente -->
+          </div>
+        </div>
+
+        <!-- Precisam de Atenção -->
+        <div class="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-2xs space-y-3">
+          <div class="flex items-center gap-2 text-rose-600">
+            <span class="text-xl">⚠️</span>
+            <h3 class="text-base font-bold text-slate-900">Matérias que Precisam de Atenção</h3>
+          </div>
+          <div id="lista-materias-alerta" class="space-y-2.5">
+            <!-- Inserido dinamicamente -->
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- ABA 7: REVISÕES ESPAÇADAS (ACTIVE RECALL)                -->
+    <!-- ======================================================== -->
+    <section id="view-revisoes" class="hidden space-y-6">
+      
+      <!-- Topo: Título e Botão de Ação -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Revisões Espaçadas 🧠
+          </h1>
+          <p class="text-sm text-slate-600">
+            Revise conteúdos no momento ideal da curva do esquecimento para consolidar na memória de longo prazo.
+          </p>
+        </div>
+        <button 
+          onclick="abrirModalNovaRevisao()" 
+          class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-sm hover:shadow active:scale-95 transition-all cursor-pointer shrink-0"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+          </svg>
+          <span>+ Nova Revisão</span>
+        </button>
+      </div>
+
+      <!-- Lista de Revisões -->
+      <div id="grid-revisoes" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Preenchido via JS -->
+      </div>
+
+      <!-- Estado Vazio para Revisões -->
+      <div id="estado-vazio-revisoes" class="hidden bg-white rounded-3xl p-10 border border-slate-200/90 text-center space-y-3">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center text-3xl">
+          🧠
+        </div>
+        <h3 class="text-lg font-bold text-slate-800">Nenhuma revisão cadastrada</h3>
+        <p class="text-sm text-slate-500 max-w-md mx-auto">
+          Cadastre os tópicos que você estudou recentemente para agendar revisões automáticas periódicas.
+        </p>
+        <button 
+          onclick="abrirModalNovaRevisao()" 
+          class="mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-xs transition-all cursor-pointer"
+        >
+          + Cadastrar Conteúdo para Revisar
+        </button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- MODAL 1: DETALHES DA MATÉRIA (CONTEÚDOS)   -->
+  <!-- ========================================== -->
+  <div id="modal-detalhes-materia" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 overflow-hidden animate-fade-in">
+      
+      <!-- Cabeçalho do Modal -->
+      <div class="p-6 border-b border-slate-100 flex items-start justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span id="detalhe-materia-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold border">
+              Prioridade
+            </span>
+            <span id="detalhe-materia-professor" class="text-xs text-slate-500">
+              Professor
+            </span>
+          </div>
+          <h2 id="detalhe-materia-nome" class="text-2xl font-extrabold text-slate-900">
+            Matemática
+          </h2>
+          <p id="detalhe-materia-prova" class="text-xs text-rose-600 font-semibold mt-0.5">
+            Próxima prova: --
+          </p>
+        </div>
+        <button onclick="fecharModalDetalhesMateria()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center cursor-pointer transition-colors">
+          ✕
+        </button>
+      </div>
+
+      <!-- Corpo com Progresso e Checklist de Conteúdos -->
+      <div class="p-6 overflow-y-auto space-y-6 flex-1">
+        
+        <!-- Barra de Progresso da Matéria -->
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-2">
+          <div class="flex items-center justify-between text-sm font-bold text-slate-800">
+            <span>Progresso da Disciplina</span>
+            <span id="detalhe-materia-progresso-texto" class="text-indigo-600">0%</span>
+          </div>
+          <div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden">
+            <div id="detalhe-materia-progresso-barra" class="bg-indigo-600 h-full rounded-full transition-all duration-300 w-0"></div>
+          </div>
+          <div class="text-right text-xs text-slate-500" id="detalhe-materia-conteudos-ratio">
+            0 de 0 conteúdos concluídos
+          </div>
+        </div>
+
+        <!-- Adicionar Novo Conteúdo Inline -->
+        <form onsubmit="event.preventDefault(); adicionarConteudoMateria();" class="flex gap-2">
+          <input 
+            type="text" 
+            id="input-novo-conteudo" 
+            placeholder="Novo conteúdo (ex: Trigonometria, Redação nota 1000)..." 
+            class="flex-1 px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+          <button 
+            type="submit" 
+            class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-xs active:scale-95 transition-all cursor-pointer shrink-0"
+          >
+            + Adicionar
+          </button>
+        </form>
+
+        <!-- Checklist de Conteúdos -->
+        <div class="space-y-2">
+          <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider">
+            Conteúdos & Tópicos:
+          </h3>
+          <ul id="lista-conteudos-materia" class="space-y-2">
+            <!-- Inserido dinamicamente via JS -->
+          </ul>
+          <div id="estado-vazio-conteudos" class="hidden text-center py-6 text-slate-400 text-sm">
+            Nenhum conteúdo cadastrado para esta matéria ainda.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Rodapé do Modal com Ações Rápidas -->
+      <div class="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-3">
+        <button 
+          id="btn-detalhes-iniciar-pomodoro" 
+          class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-1.5 shadow-xs"
+        >
+          <span>⏱️</span> Estudar com Pomodoro
+        </button>
+        <button onclick="fecharModalDetalhesMateria()" class="px-4 py-2 rounded-xl bg-white border border-slate-300 text-slate-700 text-xs sm:text-sm font-semibold hover:bg-slate-50 cursor-pointer">
+          Fechar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 2: CADASTRO / EDIÇÃO DE MATÉRIA      -->
+  <!-- ========================================== -->
+  <div id="modal-form-materia" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden animate-fade-in">
+      <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+        <h2 id="modal-materia-titulo" class="text-xl font-bold text-slate-900">
+          Cadastrar Matéria
+        </h2>
+        <button onclick="fecharModalFormMateria()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <form id="form-cadastro-materia" onsubmit="event.preventDefault(); salvarMateriaForm();" class="p-6 space-y-4">
+        <input type="hidden" id="form-materia-id">
+
+        <!-- Nome da Matéria -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+            Nome da Matéria <span class="text-rose-500">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="form-materia-nome" 
+            required 
+            placeholder="Ex: Matemática, Física, Biologia..." 
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <!-- Prioridade -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              Prioridade <span class="text-rose-500">*</span>
+            </label>
+            <select 
+              id="form-materia-prioridade" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer"
+            >
+              <option value="Alta">Alta</option>
+              <option value="Média" selected>Média</option>
+              <option value="Baixa">Baixa</option>
+            </select>
+          </div>
+
+          <!-- Cor da Matéria -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              Cor do Card
+            </label>
+            <select 
+              id="form-materia-cor" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer"
+            >
+              <option value="indigo">Índigo (Padrão)</option>
+              <option value="violet">Roxo / Violeta</option>
+              <option value="emerald">Verde Esmeralda</option>
+              <option value="amber">Âmbar / Laranja</option>
+              <option value="rose">Rosa / Vermelho</option>
+              <option value="blue">Azul Celeste</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <!-- Professor (Opcional) -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              Professor (Opcional)
+            </label>
+            <input 
+              type="text" 
+              id="form-materia-professor" 
+              placeholder="Ex: Prof. Roberto" 
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+          </div>
+
+          <!-- Próxima Prova (Opcional) -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              Próxima Prova (Opcional)
+            </label>
+            <input 
+              type="date" 
+              id="form-materia-prova" 
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            >
+          </div>
+        </div>
+
+        <!-- Descrição (Opcional) -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+            Descrição ou Observações (Opcional)
+          </label>
+          <textarea 
+            id="form-materia-descricao" 
+            rows="2" 
+            placeholder="Tópicos de maior dificuldade, bibliografia recomendada..." 
+            class="w-full px-4 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+          ></textarea>
+        </div>
+
+        <div class="pt-3 flex items-center justify-end gap-2">
+          <button 
+            type="button" 
+            onclick="fecharModalFormMateria()" 
+            class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-50 cursor-pointer"
+          >
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-xs active:scale-95 transition-all cursor-pointer"
+          >
+            Salvar Matéria
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 3: CADASTRO / EDIÇÃO DE TAREFA       -->
+  <!-- ========================================== -->
+  <div id="modal-form-tarefa" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden animate-fade-in">
+      <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+        <h2 id="modal-tarefa-titulo" class="text-xl font-bold text-slate-900">
+          Cadastrar Tarefa
+        </h2>
+        <button onclick="fecharModalFormTarefa()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <form id="form-cadastro-tarefa" onsubmit="event.preventDefault(); salvarTarefaForm();" class="p-6 space-y-4">
+        <input type="hidden" id="form-tarefa-id">
+
+        <!-- Nome da Tarefa -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+            Nome da Tarefa <span class="text-rose-500">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="form-tarefa-nome" 
+            required 
+            placeholder="Ex: Fazer resumo de História, Lista 4 de Geometria..." 
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+        </div>
+
+        <!-- Matéria Vinculada -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+            Matéria <span class="text-rose-500">*</span>
+          </label>
+          <select 
+            id="form-tarefa-materia" 
+            required 
+            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer"
+          >
+            <!-- Preenchido via JS -->
+          </select>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <!-- Prazo de Entrega -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              Prazo de Entrega <span class="text-rose-500">*</span>
+            </label>
+            <input 
+              type="date" 
+              id="form-tarefa-prazo" 
+              required 
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            >
+          </div>
+
+          <!-- Prioridade -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              Prioridade <span class="text-rose-500">*</span>
+            </label>
+            <select 
+              id="form-tarefa-prioridade" 
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer"
+            >
+              <option value="Alta">Alta</option>
+              <option value="Média" selected>Média</option>
+              <option value="Baixa">Baixa</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pt-3 flex items-center justify-end gap-2">
+          <button 
+            type="button" 
+            onclick="fecharModalFormTarefa()" 
+            class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-50 cursor-pointer"
+          >
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-xs active:scale-95 transition-all cursor-pointer"
+          >
+            Salvar Tarefa
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 4: AGENDAR ESTUDO NO CRONOGRAMA     -->
+  <!-- ========================================== -->
+  <div id="modal-form-cronograma" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden animate-fade-in">
+      <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+        <h2 class="text-xl font-bold text-slate-900">
+          Agendar Período de Estudo
+        </h2>
+        <button onclick="fecharModalFormCronograma()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <form id="form-cadastro-cronograma" onsubmit="event.preventDefault(); salvarCronogramaForm();" class="p-6 space-y-4">
+        <!-- Matéria -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+            Matéria <span class="text-rose-500">*</span>
+          </label>
+          <select 
+            id="form-crono-materia" 
+            required 
+            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer"
+          >
+            <!-- Preenchido via JS -->
+          </select>
+        </div>
+
+        <!-- Conteúdo a ser estudado -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+            Conteúdo / Objetivo da Sessão <span class="text-rose-500">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="form-crono-conteudo" 
+            required 
+            placeholder="Ex: Resolver lista de exercícios, assistir aula 4..." 
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <!-- Data do Estudo -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              Data <span class="text-rose-500">*</span>
+            </label>
+            <input 
+              type="date" 
+              id="form-crono-data" 
+              required 
+              class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            >
+          </div>
+
+          <!-- Horário Inicial -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              Início <span class="text-rose-500">*</span>
+            </label>
+            <input 
+              type="time" 
+              id="form-crono-inicio" 
+              required 
+              value="14:00"
+              class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            >
+          </div>
+
+          <!-- Horário Final -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              Término <span class="text-rose-500">*</span>
+            </label>
+            <input 
+              type="time" 
+              id="form-crono-fim" 
+              required 
+              value="15:30"
+              class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            >
+          </div>
+        </div>
+
+        <div class="pt-3 flex items-center justify-end gap-2">
+          <button 
+            type="button" 
+            onclick="fecharModalFormCronograma()" 
+            class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-50 cursor-pointer"
+          >
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-xs active:scale-95 transition-all cursor-pointer"
+          >
+            Confirmar Agendamento
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 5: CADASTRO DE REVISÃO ESPAÇADA      -->
+  <!-- ========================================== -->
+  <div id="modal-form-revisao" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden animate-fade-in">
+      <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+        <h2 class="text-xl font-bold text-slate-900">
+          Cadastrar Conteúdo para Revisão
+        </h2>
+        <button onclick="fecharModalFormRevisao()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <form id="form-cadastro-revisao" onsubmit="event.preventDefault(); salvarRevisaoForm();" class="p-6 space-y-4">
+        <!-- Matéria -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+            Matéria <span class="text-rose-500">*</span>
+          </label>
+          <select 
+            id="form-revisao-materia" 
+            required 
+            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white cursor-pointer"
+          >
+            <!-- Preenchido via JS -->
+          </select>
+        </div>
+
+        <!-- Conteúdo -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+            Conteúdo a Revisar <span class="text-rose-500">*</span>
+          </label>
+          <input 
+            type="text" 
+            id="form-revisao-conteudo" 
+            required 
+            placeholder="Ex: Geometria Espacial, Leis de Newton, Funções..." 
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <!-- Último Estudo -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              Último Estudo
+            </label>
+            <input 
+              type="date" 
+              id="form-revisao-ultimo-estudo" 
+              required 
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            >
+          </div>
+
+          <!-- Próxima Revisão -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              Próxima Revisão <span class="text-rose-500">*</span>
+            </label>
+            <input 
+              type="date" 
+              id="form-revisao-proxima-data" 
+              required 
+              class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            >
+          </div>
+        </div>
+
+        <div class="pt-3 flex items-center justify-end gap-2">
+          <button 
+            type="button" 
+            onclick="fecharModalFormRevisao()" 
+            class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 text-sm font-semibold hover:bg-slate-50 cursor-pointer"
+          >
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-xs active:scale-95 transition-all cursor-pointer"
+          >
+            Agendar Revisão
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 6: POMODORO PERSONALIZADO            -->
+  <!-- ========================================== -->
+  <div id="modal-pomodoro-custom" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full shadow-2xl border border-slate-200 p-6 space-y-4 animate-fade-in">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-bold text-slate-900">Definir Pomodoro</h3>
+        <button onclick="fecharModalPomodoroPersonalizado()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+            Minutos de Estudo (Foco):
+          </label>
+          <input 
+            type="number" 
+            id="input-custom-estudo" 
+            min="1" 
+            max="120" 
+            value="35" 
+            class="w-full px-4 py-2 rounded-xl border border-slate-300 text-sm font-bold focus:ring-2 focus:ring-indigo-500"
+          >
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+            Minutos de Pausa:
+          </label>
+          <input 
+            type="number" 
+            id="input-custom-pausa" 
+            min="1" 
+            max="60" 
+            value="7" 
+            class="w-full px-4 py-2 rounded-xl border border-slate-300 text-sm font-bold focus:ring-2 focus:ring-indigo-500"
+          >
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="fecharModalPomodoroPersonalizado()" class="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-600">
+          Cancelar
+        </button>
+        <button onclick="aplicarPomodoroPersonalizado()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs">
+          Aplicar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 7: CONFIRMAÇÃO DE EXCLUSÃO           -->
+  <!-- ========================================== -->
+  <div id="modal-confirmacao" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center space-y-4 shadow-2xl border border-slate-200 animate-fade-in">
+      <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 mx-auto flex items-center justify-center text-2xl">
+        🗑️
+      </div>
+      <div>
+        <h3 id="confirmacao-titulo" class="text-lg font-bold text-slate-900">Excluir item?</h3>
+        <p id="confirmacao-mensagem" class="text-xs sm:text-sm text-slate-500 mt-1">
+          Esta ação não poderá ser desfeita.
+        </p>
+      </div>
+      <div class="flex items-center justify-center gap-2 pt-2">
+        <button 
+          onclick="fecharModalConfirmacao()" 
+          class="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 text-xs sm:text-sm font-semibold hover:bg-slate-50 cursor-pointer"
+        >
+          Cancelar
+        </button>
+        <button 
+          id="btn-confirmar-exclusao" 
+          class="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-bold shadow-xs cursor-pointer"
+        >
+          Sim, Excluir
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- TOAST FLUTUANTE DE NOTIFICAÇÃO             -->
+  <!-- ========================================== -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 pointer-events-none transition-all duration-300">
+    <div id="toast-conteudo" class="flex items-center gap-3 px-4.5 py-3 rounded-2xl shadow-xl text-sm font-semibold text-white bg-slate-900 border border-slate-800">
+      <span id="toast-icone">✓</span>
+      <span id="toast-texto">Notificação</span>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- RODAPÉ DA PÁGINA                           -->
+  <!-- ========================================== -->
+  <footer class="mt-auto border-t border-slate-200 bg-white/80 py-6 text-center text-xs text-slate-500 space-y-1">
+    <p class="font-medium text-slate-700">EstudaPraValer &copy; 2026 - Plataforma Completa de Gestão e Produtividade Acadêmica</p>
+    <p class="text-slate-400">Desenvolvido com foco em alta retenção, foco Pomodoro e organização de rotina de estudos.</p>
+  </footer>
+
+  <!-- ========================================== -->
+  <!-- LÓGICA JAVASCRIPT COMPLETA E INTEGRADA     -->
+  <!-- ========================================== -->
+  <script>
+    // Chave de Armazenamento Local
+    const STORAGE_KEY_V2 = 'estudapravaler_dados_v2';
+    const STORAGE_KEY_V1 = 'estudapravaler_materias_v1';
+
+    // Estado Global da Aplicação
+    let appState = carregarDadosIniciais();
+
+    // Estado do Pomodoro
+    let pomodoroState = {
+      tempoRestanteSegundos: 25 * 60,
+      totalSegundosSessao: 25 * 60,
+      minutosEstudo: 25,
+      minutosPausa: 5,
+      modoAtual: 'estudo', // 'estudo' ou 'pausa'
+      intervalId: null,
+      emExecucao: false,
+      materiaIdAtual: null
+    };
+
+    // Filtros de Tarefas
+    let filtroTarefaStatus = 'todas'; // 'todas' | 'pendentes' | 'concluidas'
+
+    // Aba Ativa
+    let abaAtual = 'dashboard';
+
+    // Variável de controle do modal de detalhes da matéria
+    let materiaDetalheAtualId = null;
+
+    // Inicialização ao carregar a página
+    document.addEventListener('DOMContentLoaded', () => {
+      // Ajusta data atual padrão nos inputs de data
+      const hojeStr = obterDataHojeIso();
+      const inputProva = document.getElementById('form-materia-prova');
+      const inputPrazo = document.getElementById('form-tarefa-prazo');
+      const inputCronoData = document.getElementById('form-crono-data');
+      const inputRevisaoUltimo = document.getElementById('form-revisao-ultimo-estudo');
+      const inputRevisaoProxima = document.getElementById('form-revisao-proxima-data');
+
+      if (inputPrazo) inputPrazo.value = somarDiasDataIso(hojeStr, 3);
+      if (inputCronoData) inputCronoData.value = hojeStr;
+      if (inputRevisaoUltimo) inputRevisaoUltimo.value = hojeStr;
+      if (inputRevisaoProxima) inputRevisaoProxima.value = somarDiasDataIso(hojeStr, 3);
+
+      // Renderizar tudo
+      atualizarIconeTema(document.documentElement.classList.contains('dark'));
+      popularSelectsMaterias();
+      renderizarDashboard();
+      renderizarMaterias();
+      renderizarTarefas();
+      renderizarCronograma();
+      renderizarPomodoroInfo();
+      renderizarDesempenho();
+      renderizarRevisoes();
+    });
+
+    /**
+     * Alterna entre Modo Claro e Modo Escuro
+     */
+    function alternarTema() {
+      const isDark = document.documentElement.classList.toggle('dark');
+      try {
+        localStorage.setItem('estudapravaler_tema', isDark ? 'dark' : 'light');
+      } catch (e) {}
+      atualizarIconeTema(isDark);
+      mostrarToast(isDark ? 'Modo Escuro ativado 🌙' : 'Modo Claro ativado ☀️', 'info');
+    }
+
+    /**
+     * Atualiza o ícone e tooltip do botão de tema
+     */
+    function atualizarIconeTema(isDark) {
+      const icone = document.getElementById('icone-tema');
+      const btn = document.getElementById('btn-tema');
+      const texto = document.getElementById('texto-tema');
+      if (icone) {
+        icone.textContent = isDark ? '☀️' : '🌙';
+      }
+      if (texto) {
+        texto.textContent = isDark ? 'Claro' : 'Escuro';
+      }
+      if (btn) {
+        btn.title = isDark ? 'Alternar para Modo Claro' : 'Alternar para Modo Escuro';
+      }
+    }
+
+    /**
+     * Carrega os dados do LocalStorage ou define um conjunto didático completo inicial
+     */
+    function carregarDadosIniciais() {
+      try {
+        const dadosSalvos = localStorage.getItem(STORAGE_KEY_V2);
+        if (dadosSalvos) {
+          const parsed = JSON.parse(dadosSalvos);
+          if (parsed && Array.isArray(parsed.materias)) {
+            return parsed;
+          }
+        }
+
+        // Tenta migrar da versão 1 se existir
+        const dadosV1 = localStorage.getItem(STORAGE_KEY_V1);
+        if (dadosV1) {
+          const parsedV1 = JSON.parse(dadosV1);
+          if (Array.isArray(parsedV1) && parsedV1.length > 0) {
+            const materiasMigradas = parsedV1.map((item, idx) => ({
+              id: item.id || Date.now() + idx,
+              nome: item.nome,
+              prioridade: item.prioridade || 'Média',
+              professor: '',
+              cor: idx % 2 === 0 ? 'indigo' : 'violet',
+              proximaProva: somarDiasDataIso(obterDataHojeIso(), 7 + idx * 3),
+              descricao: 'Matéria importada da versão anterior.',
+              conteudos: [
+                { id: Date.now() + idx * 10 + 1, titulo: 'Introdução e Fundamentos', concluido: item.concluida || false },
+                { id: Date.now() + idx * 10 + 2, titulo: 'Exercícios de Fixação', concluido: false }
+              ]
+            }));
+
+            const dadosMigrados = {
+              materias: materiasMigradas,
+              tarefas: [
+                {
+                  id: Date.now() + 100,
+                  nome: `Lista de exercícios de ${materiasMigradas[0].nome}`,
+                  materiaId: materiasMigradas[0].id,
+                  materiaNome: materiasMigradas[0].nome,
+                  prazo: somarDiasDataIso(obterDataHojeIso(), 3),
+                  prioridade: 'Alta',
+                  concluida: false
+                }
+              ],
+              cronograma: [
+                {
+                  id: Date.now() + 200,
+                  materiaId: materiasMigradas[0].id,
+                  materiaNome: materiasMigradas[0].nome,
+                  data: obterDataHojeIso(),
+                  horaInicio: '14:00',
+                  horaFim: '15:30',
+                  conteudo: 'Revisão intensiva'
+                }
+              ],
+              estudosLog: [
+                { id: 1, data: obterDataHojeIso(), minutos: 50, materiaNome: materiasMigradas[0].nome }
+              ],
+              revisoes: [
+                {
+                  id: Date.now() + 300,
+                  materiaId: materiasMigradas[0].id,
+                  materiaNome: materiasMigradas[0].nome,
+                  conteudo: 'Fundamentos essenciais',
+                  ultimoEstudo: somarDiasDataIso(obterDataHojeIso(), -2),
+                  proximaRevisao: somarDiasDataIso(obterDataHojeIso(), 2),
+                  concluida: false
+                }
+              ]
+            };
+            localStorage.setItem(STORAGE_KEY_V2, JSON.stringify(dadosMigrados));
+            return dadosMigrados;
+          }
+        }
+      } catch (err) {
+        console.warn('Erro ao ler localStorage:', err);
+      }
+
+      // Conjunto Padrão Rico e Realista para o estudante
+      const hoje = obterDataHojeIso();
+      const seed = {
+        materias: [
+          {
+            id: 101,
+            nome: 'Matemática',
+            prioridade: 'Alta',
+            professor: 'Prof. Carlos Eduardo',
+            cor: 'indigo',
+            proximaProva: somarDiasDataIso(hoje, 5),
+            descricao: 'Foco total em Geometria Espacial, Poliedros e Funções Quadráticas.',
+            conteudos: [
+              { id: 1001, titulo: 'Equações e Sistemas', concluido: true },
+              { id: 1002, titulo: 'Funções Quadráticas', concluido: true },
+              { id: 1003, titulo: 'Geometria Espacial', concluido: true },
+              { id: 1004, titulo: 'Trigonometria e Triângulos', concluido: false }
+            ]
+          },
+          {
+            id: 102,
+            nome: 'História Geral',
+            prioridade: 'Média',
+            professor: 'Profª. Fernanda',
+            cor: 'amber',
+            proximaProva: somarDiasDataIso(hoje, 8),
+            descricao: 'Revoluções Industriais e Idade Contemporânea.',
+            conteudos: [
+              { id: 1005, titulo: 'Revolução Industrial I e II', concluido: true },
+              { id: 1006, titulo: 'Primeira Guerra Mundial', concluido: false },
+              { id: 1007, titulo: 'Período Entreguerras', concluido: false }
+            ]
+          },
+          {
+            id: 103,
+            nome: 'Física',
+            prioridade: 'Alta',
+            professor: 'Prof. Marcos',
+            cor: 'violet',
+            proximaProva: somarDiasDataIso(hoje, 12),
+            descricao: 'Mecânica Clássica e Leis de Newton.',
+            conteudos: [
+              { id: 1008, titulo: 'Cinemática e MRUV', concluido: true },
+              { id: 1009, titulo: 'Leis de Newton e Força de Atrito', concluido: false },
+              { id: 1010, titulo: 'Trabalho e Energia Mecânica', concluido: false }
+            ]
+          },
+          {
+            id: 104,
+            nome: 'Biologia',
+            prioridade: 'Baixa',
+            professor: 'Profª. Beatriz',
+            cor: 'emerald',
+            proximaProva: somarDiasDataIso(hoje, 15),
+            descricao: 'Citologia e Genética básica.',
+            conteudos: [
+              { id: 1011, titulo: 'Célula Animal e Vegetal', concluido: true },
+              { id: 1012, titulo: 'Divisão Celular: Mitose e Meiose', concluido: true },
+              { id: 1013, titulo: 'Primeira Lei de Mendel', concluido: false }
+            ]
+          }
+        ],
+        tarefas: [
+          {
+            id: 201,
+            nome: 'Resolver lista de exercícios de Funções',
+            materiaId: 101,
+            materiaNome: 'Matemática',
+            prazo: somarDiasDataIso(hoje, 2),
+            prioridade: 'Alta',
+            concluida: false
+          },
+          {
+            id: 202,
+            nome: 'Fazer resumo da Revolução Industrial',
+            materiaId: 102,
+            materiaNome: 'História Geral',
+            prazo: somarDiasDataIso(hoje, 4),
+            prioridade: 'Média',
+            concluida: false
+          },
+          {
+            id: 203,
+            nome: 'Exercícios de Força de Atrito',
+            materiaId: 103,
+            materiaNome: 'Física',
+            prazo: somarDiasDataIso(hoje, 6),
+            prioridade: 'Alta',
+            concluida: false
+          },
+          {
+            id: 204,
+            nome: 'Revisar anotações de Mitose e Meiose',
+            materiaId: 104,
+            materiaNome: 'Biologia',
+            prazo: somarDiasDataIso(hoje, -1),
+            prioridade: 'Baixa',
+            concluida: true
+          }
+        ],
+        cronograma: [
+          {
+            id: 301,
+            materiaId: 101,
+            materiaNome: 'Matemática',
+            data: hoje,
+            horaInicio: '14:00',
+            horaFim: '15:30',
+            conteudo: 'Geometria Espacial & Prismas'
+          },
+          {
+            id: 302,
+            materiaId: 103,
+            materiaNome: 'Física',
+            data: somarDiasDataIso(hoje, 1),
+            horaInicio: '16:00',
+            horaFim: '17:30',
+            conteudo: 'Leis de Newton'
+          },
+          {
+            id: 303,
+            materiaId: 102,
+            materiaNome: 'História Geral',
+            data: somarDiasDataIso(hoje, 2),
+            horaInicio: '10:00',
+            horaFim: '11:30',
+            conteudo: 'Revolução Industrial'
+          }
+        ],
+        estudosLog: [
+          { id: 1, data: somarDiasDataIso(hoje, -3), minutos: 90, materiaNome: 'Matemática' },
+          { id: 2, data: somarDiasDataIso(hoje, -2), minutos: 120, materiaNome: 'Física' },
+          { id: 3, data: somarDiasDataIso(hoje, -1), minutos: 60, materiaNome: 'Biologia' },
+          { id: 4, data: hoje, minutos: 75, materiaNome: 'Matemática' }
+        ],
+        revisoes: [
+          {
+            id: 401,
+            materiaId: 101,
+            materiaNome: 'Matemática',
+            conteudo: 'Geometria Espacial',
+            ultimoEstudo: somarDiasDataIso(hoje, -2),
+            proximaRevisao: somarDiasDataIso(hoje, 1),
+            concluida: false
+          },
+          {
+            id: 402,
+            materiaId: 103,
+            materiaNome: 'Física',
+            conteudo: 'Cinemática Vetorial',
+            ultimoEstudo: somarDiasDataIso(hoje, -5),
+            proximaRevisao: hoje,
+            concluida: false
+          }
+        ]
+      };
+
+      salvarEstado(seed);
+      return seed;
+    }
+
+    /**
+     * Salva o estado atual no LocalStorage
+     */
+    function salvarEstado(dados = appState) {
+      try {
+        localStorage.setItem(STORAGE_KEY_V2, JSON.stringify(dados));
+      } catch (e) {
+        console.warn('Erro ao salvar dados:', e);
+      }
+    }
+
+    /**
+     * Alterna a visualização entre as abas do sistema
+     */
+    function trocarAba(nomeAba) {
+      abaAtual = nomeAba;
+      const abas = ['dashboard', 'materias', 'tarefas', 'cronograma', 'pomodoro', 'desempenho', 'revisoes'];
+
+      abas.forEach(aba => {
+        const view = document.getElementById(`view-${aba}`);
+        const btn = document.getElementById(`nav-${aba}`);
+
+        if (view) {
+          if (aba === nomeAba) {
+            view.classList.remove('hidden');
+          } else {
+            view.classList.add('hidden');
+          }
+        }
+
+        if (btn) {
+          if (aba === nomeAba) {
+            btn.className = 'tab-btn px-3 py-2 rounded-xl transition-all whitespace-nowrap flex items-center gap-1.5 text-indigo-700 bg-indigo-50 border border-indigo-200/80 shadow-2xs font-bold';
+          } else {
+            btn.className = 'tab-btn px-3 py-2 rounded-xl transition-all whitespace-nowrap flex items-center gap-1.5 text-slate-600 hover:text-indigo-600 hover:bg-slate-100 font-semibold';
+          }
+        }
+      });
+
+      // Atualiza os dados específicos da aba ao abri-la
+      if (nomeAba === 'dashboard') renderizarDashboard();
+      if (nomeAba === 'materias') renderizarMaterias();
+      if (nomeAba === 'tarefas') renderizarTarefas();
+      if (nomeAba === 'cronograma') renderizarCronograma();
+      if (nomeAba === 'pomodoro') renderizarPomodoroInfo();
+      if (nomeAba === 'desempenho') renderizarDesempenho();
+      if (nomeAba === 'revisoes') renderizarRevisoes();
+
+      // Scroll suave para o topo
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ========================================================
+    // RENDERIZADORES DE CADA MÓDULO
+    // ========================================================
+
+    /**
+     * 1. Dashboard: Atualiza os 5 cards de estatísticas e os Próximos Prazos
+     */
+    function renderizarDashboard() {
+      const materias = appState.materias || [];
+      const tarefas = appState.tarefas || [];
+      const estudosLog = appState.estudosLog || [];
+
+      // 1. Total de matérias
+      document.getElementById('stat-total-materias').textContent = materias.length;
+
+      // 2 e 3. Tarefas pendentes e concluídas
+      const pendentes = tarefas.filter(t => !t.concluida).length;
+      const concluidas = tarefas.filter(t => t.concluida).length;
+      document.getElementById('stat-tarefas-pendentes').textContent = pendentes;
+      document.getElementById('stat-tarefas-concluidas').textContent = concluidas;
+
+      // 4. Horas estudadas
+      const totalMinutos = estudosLog.reduce((acc, log) => acc + (Number(log.minutos) || 0), 0);
+      const horas = Math.floor(totalMinutos / 60);
+      const minutosRestantes = totalMinutos % 60;
+      const horasFormatadas = `${horas}h${minutosRestantes < 10 ? '0' : ''}${minutosRestantes}`;
+      document.getElementById('stat-horas-estudadas').textContent = horasFormatadas;
+
+      // 5. Progresso geral dos estudos (% ponderada de conteúdos de matérias e tarefas)
+      let totalItens = 0;
+      let totalConcluidos = 0;
+
+      materias.forEach(m => {
+        if (Array.isArray(m.conteudos)) {
+          totalItens += m.conteudos.length;
+          totalConcluidos += m.conteudos.filter(c => c.concluido).length;
+        }
+      });
+
+      totalItens += tarefas.length;
+      totalConcluidos += concluidas;
+
+      const progressoGeral = totalItens > 0 ? Math.round((totalConcluidos / totalItens) * 100) : 0;
+      document.getElementById('stat-progresso-geral').textContent = `${progressoGeral}%`;
+
+      // Renderiza a seção de Próximos Prazos
+      renderizarProximosPrazos();
+    }
+
+    /**
+     * 8. Próximos Prazos: Agrupa provas de matérias e tarefas pendentes ordenadas por data
+     */
+    function renderizarProximosPrazos() {
+      const container = document.getElementById('lista-proximos-prazos');
+      if (!container) return;
+
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+
+      const eventos = [];
+
+      // Provas das matérias
+      (appState.materias || []).forEach(m => {
+        if (m.proximaProva) {
+          eventos.push({
+            tipo: 'prova',
+            titulo: `Prova de ${m.nome}`,
+            materia: m.nome,
+            dataStr: m.proximaProva,
+            cor: m.cor || 'indigo'
+          });
+        }
+      });
+
+      // Tarefas pendentes com prazo
+      (appState.tarefas || []).filter(t => !t.concluida && t.prazo).forEach(t => {
+        eventos.push({
+          tipo: 'tarefa',
+          titulo: t.nome,
+          materia: t.materiaNome || 'Geral',
+          dataStr: t.prazo,
+          cor: 'violet'
+        });
+      });
+
+      // Ordenar por data crescente
+      eventos.sort((a, b) => new Date(a.dataStr) - new Date(b.dataStr));
+
+      if (eventos.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full py-6 text-center text-slate-400 text-sm">
+            Nenhum prazo próximo ou prova agendada no momento. Tudo em dia! 🎉
+          </div>
+        `;
+        return;
+      }
+
+      // Exibe até 6 próximos prazos
+      const proximos = eventos.slice(0, 6);
+
+      container.innerHTML = proximos.map(ev => {
+        const dataEv = new Date(ev.dataStr + 'T00:00:00');
+        const diffTempo = dataEv - hoje;
+        const diffDias = Math.ceil(diffTempo / (1000 * 60 * 60 * 24));
+
+        let textoDias = '';
+        let classeBadge = '';
+
+        if (diffDias < 0) {
+          textoDias = `Atrasado há ${Math.abs(diffDias)} dia(s)`;
+          classeBadge = 'bg-rose-100 text-rose-800 border-rose-200';
+        } else if (diffDias === 0) {
+          textoDias = 'É hoje!';
+          classeBadge = 'bg-amber-100 text-amber-800 border-amber-300 font-bold animate-pulse';
+        } else if (diffDias === 1) {
+          textoDias = 'Amanhã!';
+          classeBadge = 'bg-amber-50 text-amber-700 border-amber-200';
+        } else {
+          textoDias = `Faltam ${diffDias} dias`;
+          classeBadge = 'bg-indigo-50 text-indigo-700 border-indigo-200';
+        }
+
+        const dataFormatada = formatarDataPtBr(ev.dataStr);
+
+        return `
+          <div class="p-3.5 rounded-2xl border border-slate-200/90 bg-slate-50/50 hover:bg-white hover:border-slate-300 transition-all flex items-center justify-between gap-3 group">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-10 h-10 rounded-xl ${ev.tipo === 'prova' ? 'bg-rose-100 text-rose-600' : 'bg-indigo-100 text-indigo-600'} flex items-center justify-center shrink-0 text-lg">
+                ${ev.tipo === 'prova' ? '🎯' : '📝'}
+              </div>
+              <div class="min-w-0">
+                <h4 class="text-sm font-bold text-slate-800 truncate">${escaparHtml(ev.titulo)}</h4>
+                <div class="flex items-center gap-2 text-xs text-slate-500">
+                  <span>${escaparHtml(ev.materia)}</span>
+                  <span>•</span>
+                  <span>${dataFormatada}</span>
+                </div>
+              </div>
+            </div>
+            <span class="px-2.5 py-1 rounded-full text-xs font-semibold border ${classeBadge} shrink-0">
+              ${textoDias}
+            </span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /**
+     * 2. Minhas Matérias: Renderiza o grid de matérias com progresso, conteúdos, provas e botões
+     */
+    function renderizarMaterias() {
+      const grid = document.getElementById('grid-materias');
+      const estadoVazio = document.getElementById('estado-vazio-materias');
+      const termoBusca = (document.getElementById('busca-materia')?.value || '').toLowerCase().trim();
+      const filtroPrioridade = document.getElementById('filtro-prioridade-materia')?.value || 'todas';
+
+      let materias = appState.materias || [];
+
+      // Filtro de prioridade
+      if (filtroPrioridade !== 'todas') {
+        materias = materias.filter(m => m.prioridade === filtroPrioridade);
+      }
+
+      // Filtro de busca
+      if (termoBusca) {
+        materias = materias.filter(m => 
+          m.nome.toLowerCase().includes(termoBusca) || 
+          (m.professor && m.professor.toLowerCase().includes(termoBusca)) ||
+          (m.descricao && m.descricao.toLowerCase().includes(termoBusca))
+        );
+      }
+
+      if (materias.length === 0) {
+        grid.innerHTML = '';
+        estadoVazio.classList.remove('hidden');
+        return;
+      }
+
+      estadoVazio.classList.add('hidden');
+
+      grid.innerHTML = materias.map(materia => {
+        const conteudos = materia.conteudos || [];
+        const totalConteudo = conteudos.length;
+        const concluidos = conteudos.filter(c => c.concluido).length;
+        const porcentagem = totalConteudo > 0 ? Math.round((concluidos / totalConteudo) * 100) : 0;
+
+        // Estilização de prioridade (Vermelho = Alta, Amarelo = Média, Verde = Baixa)
+        let prioridadeBadge = '';
+        if (materia.prioridade === 'Alta') {
+          prioridadeBadge = 'bg-rose-50 text-rose-700 border-rose-200';
+        } else if (materia.prioridade === 'Média') {
+          prioridadeBadge = 'bg-amber-50 text-amber-800 border-amber-200';
+        } else {
+          prioridadeBadge = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        }
+
+        const dataProvaStr = materia.proximaProva ? formatarDataPtBr(materia.proximaProva) : 'A definir';
+
+        return `
+          <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/90 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group">
+            
+            <div class="space-y-4">
+              <!-- Topo do Card: Nome e Prioridade -->
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <span class="text-xs font-bold text-slate-500 block uppercase tracking-wider mb-0.5">
+                    ${materia.professor ? escaparHtml(materia.professor) : 'Disciplina'}
+                  </span>
+                  <h3 class="text-xl font-extrabold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                    ${escaparHtml(materia.nome)}
+                  </h3>
+                </div>
+                <span class="px-2.5 py-1 rounded-full text-xs font-bold border ${prioridadeBadge} shrink-0">
+                  ${materia.prioridade}
+                </span>
+              </div>
+
+              <!-- Barra de Progresso com Porcentagem -->
+              <div class="space-y-1.5 bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                <div class="flex items-center justify-between text-xs font-bold">
+                  <span class="text-slate-600">Progresso</span>
+                  <span class="text-indigo-600">${porcentagem}%</span>
+                </div>
+                <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                  <div class="bg-gradient-to-r from-indigo-500 to-violet-600 h-full rounded-full transition-all duration-300" style="width: ${porcentagem}%"></div>
+                </div>
+              </div>
+
+              <!-- Informações Rápidas: Próxima Prova e Conteúdos -->
+              <div class="grid grid-cols-2 gap-2 text-xs text-slate-600 pt-1">
+                <div class="p-2 rounded-xl bg-slate-50 border border-slate-100">
+                  <span class="block text-[10px] text-slate-400 font-semibold uppercase">Próxima Prova</span>
+                  <span class="font-bold text-slate-800">${dataProvaStr}</span>
+                </div>
+                <div class="p-2 rounded-xl bg-slate-50 border border-slate-100">
+                  <span class="block text-[10px] text-slate-400 font-semibold uppercase">Conteúdos</span>
+                  <span class="font-bold text-slate-800">${concluidos}/${totalConteudo} concluídos</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botões de Ação do Card: Estudar, Editar, Excluir -->
+            <div class="pt-5 mt-4 border-t border-slate-100 flex items-center justify-between gap-2">
+              <button 
+                onclick="abrirModalDetalhesMateria(${materia.id})" 
+                class="flex-1 py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-xs hover:shadow active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <span>📖</span>
+                <span>Estudar</span>
+              </button>
+
+              <button 
+                onclick="abrirModalEditarMateria(${materia.id})" 
+                class="p-2.5 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition-all cursor-pointer"
+                title="Editar matéria"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+              </button>
+
+              <button 
+                onclick="confirmarExclusaoMateria(${materia.id})" 
+                class="p-2.5 rounded-xl border border-rose-200 hover:bg-rose-50 text-rose-600 transition-all cursor-pointer"
+                title="Excluir matéria"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+
+          </div>
+        `;
+      }).join('');
+    }
+
+    /**
+     * 4. Detalhes da Matéria: Abre o modal com checklist de conteúdos e cálculo de progresso
+     */
+    function abrirModalDetalhesMateria(materiaId) {
+      const materia = (appState.materias || []).find(m => m.id === materiaId);
+      if (!materia) return;
+
+      materiaDetalheAtualId = materiaId;
+
+      document.getElementById('detalhe-materia-nome').textContent = materia.nome;
+      document.getElementById('detalhe-materia-professor').textContent = materia.professor ? `Prof. ${materia.professor}` : '';
+      document.getElementById('detalhe-materia-prova').textContent = materia.proximaProva ? `Próxima prova: ${formatarDataPtBr(materia.proximaProva)}` : 'Nenhuma prova agendada';
+
+      const badge = document.getElementById('detalhe-materia-badge');
+      badge.textContent = `Prioridade ${materia.prioridade}`;
+      if (materia.prioridade === 'Alta') {
+        badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold border bg-rose-50 text-rose-700 border-rose-200';
+      } else if (materia.prioridade === 'Média') {
+        badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold border bg-amber-50 text-amber-800 border-amber-200';
+      } else {
+        badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold border bg-emerald-50 text-emerald-700 border-emerald-200';
+      }
+
+      // Configura botão de iniciar Pomodoro para esta matéria
+      const btnPomodoro = document.getElementById('btn-detalhes-iniciar-pomodoro');
+      btnPomodoro.onclick = () => {
+        fecharModalDetalhesMateria();
+        iniciarPomodoroParaMateria(materia.id);
+      };
+
+      renderizarListaConteudosModal();
+
+      document.getElementById('modal-detalhes-materia').classList.remove('hidden');
+    }
+
+    function fecharModalDetalhesMateria() {
+      document.getElementById('modal-detalhes-materia').classList.add('hidden');
+      materiaDetalheAtualId = null;
+      renderizarMaterias();
+      renderizarDashboard();
+      renderizarDesempenho();
+    }
+
+    /**
+     * Renderiza a lista de conteúdos com checkboxes interativos no modal de detalhes
+     */
+    function renderizarListaConteudosModal() {
+      const materia = (appState.materias || []).find(m => m.id === materiaDetalheAtualId);
+      if (!materia) return;
+
+      const conteudos = materia.conteudos || [];
+      const lista = document.getElementById('lista-conteudos-materia');
+      const estadoVazio = document.getElementById('estado-vazio-conteudos');
+
+      const concluidos = conteudos.filter(c => c.concluido).length;
+      const total = conteudos.length;
+      const porcentagem = total > 0 ? Math.round((concluidos / total) * 100) : 0;
+
+      document.getElementById('detalhe-materia-progresso-texto').textContent = `${porcentagem}%`;
+      document.getElementById('detalhe-materia-progresso-barra').style.width = `${porcentagem}%`;
+      document.getElementById('detalhe-materia-conteudos-ratio').textContent = `${concluidos} de ${total} conteúdos concluídos`;
+
+      if (total === 0) {
+        lista.innerHTML = '';
+        estadoVazio.classList.remove('hidden');
+        return;
+      }
+
+      estadoVazio.classList.add('hidden');
+
+      lista.innerHTML = conteudos.map(c => `
+        <li class="p-3 rounded-xl border ${c.concluido ? 'bg-slate-50 border-slate-200/70 text-slate-400' : 'bg-white border-slate-200 text-slate-800'} flex items-center justify-between gap-3 transition-all">
+          <label class="flex items-center gap-3 flex-1 cursor-pointer select-none">
+            <input 
+              type="checkbox" 
+              ${c.concluido ? 'checked' : ''} 
+              onchange="toggleConteudoMateria(${c.id})" 
+              class="w-5 h-5 rounded-md text-indigo-600 focus:ring-indigo-500 border-slate-300 cursor-pointer"
+            >
+            <span class="${c.concluido ? 'line-through text-slate-400' : 'font-medium text-slate-800'} text-sm">
+              ${escaparHtml(c.titulo)}
+            </span>
+          </label>
+          <button 
+            type="button" 
+            onclick="removerConteudoMateria(${c.id})" 
+            class="text-slate-400 hover:text-rose-600 p-1 transition-colors cursor-pointer"
+            title="Remover este conteúdo"
+          >
+            ✕
+          </button>
+        </li>
+      `).join('');
+    }
+
+    /**
+     * Alterna o status do checkbox de um conteúdo da matéria
+     */
+    function toggleConteudoMateria(conteudoId) {
+      const materia = (appState.materias || []).find(m => m.id === materiaDetalheAtualId);
+      if (!materia) return;
+
+      const conteudo = (materia.conteudos || []).find(c => c.id === conteudoId);
+      if (!conteudo) return;
+
+      conteudo.concluido = !conteudo.concluido;
+      salvarEstado();
+      renderizarListaConteudosModal();
+      mostrarToast(conteudo.concluido ? 'Conteúdo concluído! 🎯' : 'Conteúdo desmarcado.', 'sucesso');
+    }
+
+    /**
+     * Adiciona um novo conteúdo à matéria aberta no modal
+     */
+    function adicionarConteudoMateria() {
+      const input = document.getElementById('input-novo-conteudo');
+      const titulo = (input.value || '').trim();
+
+      if (!titulo) {
+        mostrarToast('Digite o título do conteúdo antes de adicionar.', 'aviso');
+        input.focus();
+        return;
+      }
+
+      const materia = (appState.materias || []).find(m => m.id === materiaDetalheAtualId);
+      if (!materia) return;
+
+      if (!Array.isArray(materia.conteudos)) {
+        materia.conteudos = [];
+      }
+
+      materia.conteudos.push({
+        id: Date.now(),
+        titulo: titulo,
+        concluido: false
+      });
+
+      salvarEstado();
+      input.value = '';
+      input.focus();
+      renderizarListaConteudosModal();
+      mostrarToast(`"${titulo}" adicionado com sucesso!`, 'sucesso');
+    }
+
+    /**
+     * Remove um conteúdo da matéria
+     */
+    function removerConteudoMateria(conteudoId) {
+      const materia = (appState.materias || []).find(m => m.id === materiaDetalheAtualId);
+      if (!materia) return;
+
+      materia.conteudos = (materia.conteudos || []).filter(c => c.id !== conteudoId);
+      salvarEstado();
+      renderizarListaConteudosModal();
+      mostrarToast('Conteúdo removido.', 'info');
+    }
+
+    // ========================================================
+    // 5. MÓDULO DE TAREFAS
+    // ========================================================
+
+    function setFiltroStatusTarefa(status) {
+      filtroTarefaStatus = status;
+
+      ['todas', 'pendentes', 'concluidas'].forEach(s => {
+        const btn = document.getElementById(`filtro-status-${s}`);
+        if (btn) {
+          if (s === status) {
+            btn.className = 'px-3.5 py-1.5 rounded-lg bg-white text-indigo-700 shadow-2xs font-bold transition-all';
+          } else {
+            btn.className = 'px-3.5 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 font-semibold transition-all';
+          }
+        }
+      });
+
+      renderizarTarefas();
+    }
+
+    function renderizarTarefas() {
+      const lista = document.getElementById('lista-tarefas');
+      const estadoVazio = document.getElementById('estado-vazio-tarefas');
+      const filtroMateriaId = document.getElementById('filtro-materia-tarefa')?.value || 'todas';
+      const filtroPrioridade = document.getElementById('filtro-prioridade-tarefa')?.value || 'todas';
+
+      let tarefas = appState.tarefas || [];
+
+      // Filtro de status
+      if (filtroTarefaStatus === 'pendentes') {
+        tarefas = tarefas.filter(t => !t.concluida);
+      } else if (filtroTarefaStatus === 'concluidas') {
+        tarefas = tarefas.filter(t => t.concluida);
+      }
+
+      // Filtro de matéria
+      if (filtroMateriaId !== 'todas') {
+        tarefas = tarefas.filter(t => String(t.materiaId) === String(filtroMateriaId));
+      }
+
+      // Filtro de prioridade
+      if (filtroPrioridade !== 'todas') {
+        tarefas = tarefas.filter(t => t.prioridade === filtroPrioridade);
+      }
+
+      if (tarefas.length === 0) {
+        lista.innerHTML = '';
+        estadoVazio.classList.remove('hidden');
+        const msgVazio = document.getElementById('texto-vazio-tarefas');
+        if (msgVazio) {
+          msgVazio.textContent = filtroTarefaStatus === 'concluidas' 
+            ? 'Nenhuma tarefa concluída ainda' 
+            : 'Nenhuma tarefa pendente';
+        }
+        return;
+      }
+
+      estadoVazio.classList.add('hidden');
+
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+
+      lista.innerHTML = tarefas.map(tarefa => {
+        let textoPrazo = '';
+        let classePrazo = 'text-slate-500';
+
+        if (tarefa.prazo) {
+          const dataPrazo = new Date(tarefa.prazo + 'T00:00:00');
+          const diffDias = Math.ceil((dataPrazo - hoje) / (1000 * 60 * 60 * 24));
+
+          if (diffDias < 0 && !tarefa.concluida) {
+            textoPrazo = `Atrasada (${formatarDataPtBr(tarefa.prazo)})`;
+            classePrazo = 'text-rose-600 font-bold';
+          } else if (diffDias === 0 && !tarefa.concluida) {
+            textoPrazo = 'Entrega Hoje!';
+            classePrazo = 'text-amber-600 font-bold';
+          } else {
+            textoPrazo = `Prazo: ${formatarDataPtBr(tarefa.prazo)}`;
+          }
+        }
+
+        let prioridadeBadge = '';
+        if (tarefa.prioridade === 'Alta') {
+          prioridadeBadge = 'bg-rose-50 text-rose-700 border-rose-200';
+        } else if (tarefa.prioridade === 'Média') {
+          prioridadeBadge = 'bg-amber-50 text-amber-800 border-amber-200';
+        } else {
+          prioridadeBadge = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        }
+
+        return `
+          <div class="bg-white rounded-2xl p-4 sm:p-4.5 border border-slate-200/90 shadow-2xs hover:shadow-xs transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 group">
+            
+            <div class="flex items-center gap-3.5 flex-1 min-w-0">
+              <!-- Checkbox de Conclusão -->
+              <input 
+                type="checkbox" 
+                ${tarefa.concluida ? 'checked' : ''} 
+                onchange="toggleTarefa(${tarefa.id})" 
+                class="w-5 h-5 rounded-lg text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer shrink-0"
+              >
+
+              <div class="min-w-0 flex-1">
+                <span class="${tarefa.concluida ? 'line-through text-slate-400 font-medium' : 'text-slate-900 font-bold'} text-sm sm:text-base block truncate">
+                  ${escaparHtml(tarefa.nome)}
+                </span>
+                
+                <div class="flex flex-wrap items-center gap-2 mt-1 text-xs">
+                  <span class="inline-flex items-center gap-1 font-semibold text-indigo-700 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-md">
+                    📚 ${escaparHtml(tarefa.materiaNome || 'Geral')}
+                  </span>
+                  
+                  <span class="px-2 py-0.5 rounded-md border font-semibold ${prioridadeBadge}">
+                    ${tarefa.prioridade}
+                  </span>
+
+                  ${textoPrazo ? `<span class="${classePrazo}">📅 ${textoPrazo}</span>` : ''}
+                </div>
+              </div>
+            </div>
+
+            <!-- Ações: Editar e Excluir -->
+            <div class="flex items-center gap-2 self-end sm:self-center shrink-0">
+              <button 
+                onclick="abrirModalEditarTarefa(${tarefa.id})" 
+                class="p-2 rounded-xl text-slate-400 hover:text-indigo-600 hover:bg-slate-50 transition-colors cursor-pointer"
+                title="Editar tarefa"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+              </button>
+
+              <button 
+                onclick="confirmarExclusaoTarefa(${tarefa.id})" 
+                class="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                title="Excluir tarefa"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleTarefa(tarefaId) {
+      const tarefa = (appState.tarefas || []).find(t => t.id === tarefaId);
+      if (!tarefa) return;
+
+      tarefa.concluida = !tarefa.concluida;
+      salvarEstado();
+      renderizarTarefas();
+      renderizarDashboard();
+      renderizarDesempenho();
+
+      mostrarToast(tarefa.concluida ? 'Tarefa concluída! Parabéns! 🎉' : 'Tarefa marcada como pendente.', 'sucesso');
+    }
+
+    // ========================================================
+    // 6. CRONOGRAMA DE ESTUDOS SEMANAL
+    // ========================================================
+
+    function renderizarCronograma() {
+      const grid = document.getElementById('grid-cronograma-semanal');
+      if (!grid) return;
+
+      const diasSemana = [
+        { nome: 'Segunda-feira', abrev: 'Seg', index: 1 },
+        { nome: 'Terça-feira', abrev: 'Ter', index: 2 },
+        { nome: 'Quarta-feira', abrev: 'Qua', index: 3 },
+        { nome: 'Quinta-feira', abrev: 'Qui', index: 4 },
+        { nome: 'Sexta-feira', abrev: 'Sex', index: 5 },
+        { nome: 'Sábado', abrev: 'Sáb', index: 6 },
+        { nome: 'Domingo', abrev: 'Dom', index: 0 }
+      ];
+
+      const cronograma = appState.cronograma || [];
+
+      grid.innerHTML = diasSemana.map(dia => {
+        // Encontra eventos cadastrados para esse dia da semana
+        const eventosDoDia = cronograma.filter(item => {
+          if (!item.data) return false;
+          const d = new Date(item.data + 'T00:00:00');
+          return d.getDay() === dia.index;
+        });
+
+        // Ordenar por horário inicial
+        eventosDoDia.sort((a, b) => (a.horaInicio || '').localeCompare(b.horaInicio || ''));
+
+        return `
+          <div class="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-2xs flex flex-col justify-between space-y-4">
+            
+            <div class="space-y-3">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                <h3 class="font-extrabold text-slate-800 text-sm sm:text-base">
+                  ${dia.nome}
+                </h3>
+                <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">
+                  ${eventosDoDia.length} ${eventosDoDia.length === 1 ? 'sessão' : 'sessões'}
+                </span>
+              </div>
+
+              <!-- Lista de Blocos do Dia -->
+              <div class="space-y-2.5">
+                ${eventosDoDia.length > 0 ? eventosDoDia.map(ev => `
+                  <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 hover:bg-indigo-50/40 transition-colors space-y-1 group">
+                    <div class="flex items-center justify-between text-xs font-bold">
+                      <span class="text-indigo-600">${escaparHtml(ev.horaInicio)} - ${escaparHtml(ev.horaFim)}</span>
+                      <button 
+                        onclick="removerItemCronograma(${ev.id})" 
+                        class="text-slate-300 hover:text-rose-600 transition-colors cursor-pointer"
+                        title="Remover agendamento"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <div class="font-bold text-slate-900 text-xs sm:text-sm truncate">
+                      ${escaparHtml(ev.materiaNome)}
+                    </div>
+                    <p class="text-xs text-slate-500 line-clamp-2">
+                      ${escaparHtml(ev.conteudo || 'Estudo geral')}
+                    </p>
+                  </div>
+                `).join('') : `
+                  <div class="py-6 text-center text-slate-400 text-xs">
+                    Nenhum estudo agendado para este dia.
+                  </div>
+                `}
+              </div>
+            </div>
+
+            <button 
+              onclick="abrirModalNovoCronogramaComData('${dia.index}')" 
+              class="w-full py-2 rounded-xl bg-slate-50 hover:bg-indigo-50 text-indigo-600 hover:text-indigo-700 font-bold text-xs border border-dashed border-indigo-200 transition-all cursor-pointer flex items-center justify-center gap-1"
+            >
+              + Adicionar Horário
+            </button>
+
+          </div>
+        `;
+      }).join('');
+    }
+
+    function removerItemCronograma(id) {
+      appState.cronograma = (appState.cronograma || []).filter(item => item.id !== id);
+      salvarEstado();
+      renderizarCronograma();
+      mostrarToast('Item do cronograma removido.', 'info');
+    }
+
+    // ========================================================
+    // 7. POMODORO TIMER COM REGISTRO AUTOMÁTICO DE HORAS
+    // ========================================================
+
+    function renderizarPomodoroInfo() {
+      atualizarDisplayPomodoro();
+      popularSelectsMaterias();
+    }
+
+    function atualizarDisplayPomodoro() {
+      const display = document.getElementById('pomodoro-display');
+      const barra = document.getElementById('pomodoro-barra-progresso');
+      const badge = document.getElementById('pomodoro-badge-estado');
+      const btnTexto = document.getElementById('pomodoro-btn-texto');
+      const btnIcone = document.getElementById('pomodoro-btn-icone');
+      const btnToggle = document.getElementById('btn-pomodoro-toggle');
+
+      if (!display) return;
+
+      const minutos = Math.floor(pomodoroState.tempoRestanteSegundos / 60);
+      const segundos = pomodoroState.tempoRestanteSegundos % 60;
+      display.textContent = `${minutos < 10 ? '0' : ''}${minutos}:${segundos < 10 ? '0' : ''}${segundos}`;
+
+      // Título da aba com tempo
+      document.title = pomodoroState.emExecucao 
+        ? `(${display.textContent}) EstudaPraValer` 
+        : 'EstudaPraValer - Organizador de Estudos';
+
+      // Barra de progresso
+      if (barra && pomodoroState.totalSegundosSessao > 0) {
+        const decorrido = pomodoroState.totalSegundosSessao - pomodoroState.tempoRestanteSegundos;
+        const pct = Math.min(100, Math.round((decorrido / pomodoroState.totalSegundosSessao) * 100));
+        barra.style.width = `${pct}%`;
+      }
+
+      // Estados de Botão e Badge
+      if (badge) {
+        if (pomodoroState.modoAtual === 'estudo') {
+          badge.className = 'inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200';
+          badge.innerHTML = `<span class="w-2 h-2 rounded-full ${pomodoroState.emExecucao ? 'bg-indigo-500 animate-pulse' : 'bg-slate-400'}"></span> Ciclo de Foco Total`;
+        } else {
+          badge.className = 'inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200';
+          badge.innerHTML = `<span class="w-2 h-2 rounded-full ${pomodoroState.emExecucao ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}"></span> Intervalo de Descanso ☕`;
+        }
+      }
+
+      if (btnTexto && btnIcone) {
+        if (pomodoroState.emExecucao) {
+          btnIcone.textContent = '⏸';
+          btnTexto.textContent = 'Pausar Foco';
+          btnToggle.className = 'px-8 py-3.5 rounded-2xl bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold text-base shadow-md shadow-amber-200 transition-all cursor-pointer flex items-center gap-2';
+        } else {
+          btnIcone.textContent = '▶';
+          btnTexto.textContent = 'Iniciar Foco';
+          btnToggle.className = 'px-8 py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-base shadow-md shadow-indigo-200 transition-all cursor-pointer flex items-center gap-2';
+        }
+      }
+    }
+
+    function togglePomodoro() {
+      if (pomodoroState.emExecucao) {
+        pausarPomodoro();
+      } else {
+        iniciarPomodoro();
+      }
+    }
+
+    function iniciarPomodoro() {
+      if (pomodoroState.emExecucao) return;
+
+      pomodoroState.emExecucao = true;
+      document.getElementById('pomodoro-alerta-fim')?.classList.add('hidden');
+
+      pomodoroState.intervalId = setInterval(() => {
+        if (pomodoroState.tempoRestanteSegundos > 0) {
+          pomodoroState.tempoRestanteSegundos--;
+          atualizarDisplayPomodoro();
+        } else {
+          concluirSessaoPomodoro();
+        }
+      }, 1000);
+
+      atualizarDisplayPomodoro();
+    }
+
+    function pausarPomodoro() {
+      pomodoroState.emExecucao = false;
+      clearInterval(pomodoroState.intervalId);
+      atualizarDisplayPomodoro();
+    }
+
+    function reiniciarPomodoro() {
+      pausarPomodoro();
+      const duracao = pomodoroState.modoAtual === 'estudo' 
+        ? pomodoroState.minutosEstudo * 60 
+        : pomodoroState.minutosPausa * 60;
+      
+      pomodoroState.tempoRestanteSegundos = duracao;
+      pomodoroState.totalSegundosSessao = duracao;
+      document.getElementById('pomodoro-alerta-fim')?.classList.add('hidden');
+      atualizarDisplayPomodoro();
+    }
+
+    function configurarModoPomodoro(estudoMin, pausaMin, nomeModo) {
+      pausarPomodoro();
+      pomodoroState.minutosEstudo = estudoMin;
+      pomodoroState.minutosPausa = pausaMin;
+      pomodoroState.modoAtual = 'estudo';
+      pomodoroState.tempoRestanteSegundos = estudoMin * 60;
+      pomodoroState.totalSegundosSessao = estudoMin * 60;
+
+      // Estilo dos botões de modo
+      ['25', '50', 'custom'].forEach(m => {
+        const btn = document.getElementById(`pomo-modo-${m}`);
+        if (btn) {
+          btn.className = (m === '25' && estudoMin === 25) || (m === '50' && estudoMin === 50) || (m === 'custom' && nomeModo === 'custom')
+            ? 'px-4 py-2 rounded-xl bg-white text-indigo-700 shadow-2xs font-bold transition-all'
+            : 'px-4 py-2 rounded-xl text-slate-600 hover:text-slate-900 font-semibold transition-all';
+        }
+      });
+
+      atualizarDisplayPomodoro();
+    }
+
+    /**
+     * Acionado quando o cronômetro do Pomodoro chega a 00:00
+     */
+    function concluirSessaoPomodoro() {
+      pausarPomodoro();
+
+      tocarSomAlertaPomodoro();
+
+      if (pomodoroState.modoAtual === 'estudo') {
+        // Registra os minutos estudados no Log oficial de Estudos
+        const selectMateria = document.getElementById('pomodoro-materia-select');
+        const materiaId = selectMateria ? selectMateria.value : null;
+        const materia = (appState.materias || []).find(m => String(m.id) === String(materiaId));
+        const materiaNome = materia ? materia.nome : 'Estudo Geral';
+
+        const minutosGanhos = pomodoroState.minutosEstudo;
+
+        if (!Array.isArray(appState.estudosLog)) {
+          appState.estudosLog = [];
+        }
+
+        appState.estudosLog.push({
+          id: Date.now(),
+          data: obterDataHojeIso(),
+          minutos: minutosGanhos,
+          materiaNome: materiaNome
+        });
+
+        salvarEstado();
+
+        // Alerta visual de parabéns
+        const alertaFim = document.getElementById('pomodoro-alerta-fim');
+        if (alertaFim) {
+          alertaFim.classList.remove('hidden');
+        }
+
+        mostrarToast(`Sessão de ${minutosGanhos} min em "${materiaNome}" concluída e registrada! ⏱️🎉`, 'sucesso');
+
+        // Alterna para pausa
+        pomodoroState.modoAtual = 'pausa';
+        pomodoroState.tempoRestanteSegundos = pomodoroState.minutosPausa * 60;
+        pomodoroState.totalSegundosSessao = pomodoroState.minutosPausa * 60;
+      } else {
+        // Acabou a pausa, volta para estudo
+        pomodoroState.modoAtual = 'estudo';
+        pomodoroState.tempoRestanteSegundos = pomodoroState.minutosEstudo * 60;
+        pomodoroState.totalSegundosSessao = pomodoroState.minutosEstudo * 60;
+        mostrarToast('Intervalo concluído! Pronto para o próximo ciclo de foco?', 'info');
+      }
+
+      atualizarDisplayPomodoro();
+      renderizarDashboard();
+      renderizarDesempenho();
+    }
+
+    /**
+     * Toca um sinal sonoro agradável via Web Audio API
+     */
+    function tocarSomAlertaPomodoro() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.15); // A5
+
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + 0.6);
+      } catch (e) {
+        // Áudio bloqueado ou não suportado silenciosamente
+      }
+    }
+
+    function iniciarPomodoroParaMateria(materiaId) {
+      trocarAba('pomodoro');
+      const select = document.getElementById('pomodoro-materia-select');
+      if (select) {
+        select.value = materiaId;
+      }
+      reiniciarPomodoro();
+    }
+
+    // ========================================================
+    // 9. DESEMPENHO E MÉTRICAS (GRÁFICO SEMANAL DE HORAS)
+    // ========================================================
+
+    function renderizarDesempenho() {
+      const materias = appState.materias || [];
+      const tarefas = appState.tarefas || [];
+      const estudosLog = appState.estudosLog || [];
+
+      // Métricas Totais
+      const totalTarefas = tarefas.length;
+      const concluidasTarefas = tarefas.filter(t => t.concluida).length;
+      document.getElementById('desempenho-tarefas-ratio').textContent = `${concluidasTarefas} / ${totalTarefas}`;
+      document.getElementById('desempenho-materias-ativas').textContent = materias.length;
+
+      const totalMinutos = estudosLog.reduce((acc, l) => acc + (Number(l.minutos) || 0), 0);
+      const horas = Math.floor(totalMinutos / 60);
+      const minutos = totalMinutos % 60;
+      document.getElementById('desempenho-horas-totais').textContent = `${horas}h${minutos < 10 ? '0' : ''}${minutos}`;
+
+      // Progresso Geral
+      let totalItens = 0;
+      let concluidosItens = 0;
+      materias.forEach(m => {
+        if (Array.isArray(m.conteudos)) {
+          totalItens += m.conteudos.length;
+          concluidosItens += m.conteudos.filter(c => c.concluido).length;
+        }
+      });
+      totalItens += totalTarefas;
+      concluidosItens += concluidasTarefas;
+
+      const progressoGeral = totalItens > 0 ? Math.round((concluidosItens / totalItens) * 100) : 0;
+      document.getElementById('desempenho-progresso-geral').textContent = `${progressoGeral}%`;
+
+      // Gráfico Semanal de Horas Estudadas
+      renderizarGraficoSemanal();
+
+      // Top Matérias vs Matérias que precisam de atenção
+      renderizarDestaquesDesempenho();
+    }
+
+    /**
+     * Gráfico de barras puro com Tailwind CSS (Segunda a Domingo)
+     */
+    function renderizarGraficoSemanal() {
+      const container = document.getElementById('grafico-barras-semana');
+      if (!container) return;
+
+      const diasSemana = [
+        { label: 'Seg', index: 1 },
+        { label: 'Ter', index: 2 },
+        { label: 'Qua', index: 3 },
+        { label: 'Qui', index: 4 },
+        { label: 'Sex', index: 5 },
+        { label: 'Sáb', index: 6 },
+        { label: 'Dom', index: 0 }
+      ];
+
+      // Soma os minutos de estudos registrados para cada dia da semana
+      const minutosPorDia = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+
+      (appState.estudosLog || []).forEach(log => {
+        if (log.data) {
+          const d = new Date(log.data + 'T00:00:00');
+          const dayIndex = d.getDay();
+          minutosPorDia[dayIndex] = (minutosPorDia[dayIndex] || 0) + (Number(log.minutos) || 0);
+        }
+      });
+
+      // Descobre o valor máximo para a escala relativa (mínimo 120min de escala base)
+      let maxMinutos = 120;
+      Object.values(minutosPorDia).forEach(m => {
+        if (m > maxMinutos) maxMinutos = m;
+      });
+
+      container.innerHTML = diasSemana.map(dia => {
+        const mins = minutosPorDia[dia.index] || 0;
+        const alturaPorcentagem = Math.max(8, Math.round((mins / maxMinutos) * 100));
+
+        const horasTexto = mins >= 60 
+          ? `${Math.floor(mins / 60)}h${mins % 60 ? mins % 60 + 'm' : ''}` 
+          : mins > 0 ? `${mins}m` : '0m';
+
+        return `
+          <div class="flex flex-col items-center justify-end h-full gap-2">
+            <span class="text-[11px] font-bold text-slate-500">${horasTexto}</span>
+            <div class="w-full bg-slate-100 rounded-t-xl h-full flex items-end overflow-hidden">
+              <div 
+                class="w-full bg-gradient-to-t from-indigo-600 to-violet-500 rounded-t-xl transition-all duration-500 hover:brightness-110" 
+                style="height: ${alturaPorcentagem}%"
+                title="${dia.label}: ${horasTexto} estudadas"
+              ></div>
+            </div>
+            <span class="text-xs font-bold text-slate-700">${dia.label}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /**
+     * Renderiza listas comparativas de matérias no Desempenho
+     */
+    function renderizarDestaquesDesempenho() {
+      const topContainer = document.getElementById('lista-materias-top');
+      const alertaContainer = document.getElementById('lista-materias-alerta');
+      if (!topContainer || !alertaContainer) return;
+
+      const materias = (appState.materias || []).map(m => {
+        const conteudos = m.conteudos || [];
+        const total = conteudos.length;
+        const concluidos = conteudos.filter(c => c.concluido).length;
+        const pct = total > 0 ? Math.round((concluidos / total) * 100) : 0;
+        return { ...m, pct, total, concluidos };
+      });
+
+      // Ordena por progresso decrescente
+      const ordenadasMaior = [...materias].sort((a, b) => b.pct - a.pct);
+      // Ordena por progresso crescente
+      const ordenadasMenor = [...materias].sort((a, b) => a.pct - b.pct);
+
+      topContainer.innerHTML = ordenadasMaior.slice(0, 3).map(m => `
+        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+          <div class="min-w-0">
+            <h4 class="text-sm font-bold text-slate-800 truncate">${escaparHtml(m.nome)}</h4>
+            <span class="text-xs text-slate-500">${m.concluidos}/${m.total} tópicos concluídos</span>
+          </div>
+          <span class="px-2.5 py-1 rounded-full text-xs font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200">
+            ${m.pct}%
+          </span>
+        </div>
+      `).join('') || '<p class="text-xs text-slate-400">Nenhuma matéria cadastrada.</p>';
+
+      alertaContainer.innerHTML = ordenadasMenor.slice(0, 3).map(m => `
+        <div class="p-3 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+          <div class="min-w-0">
+            <h4 class="text-sm font-bold text-slate-800 truncate">${escaparHtml(m.nome)}</h4>
+            <span class="text-xs text-rose-600 font-semibold">Prioridade ${m.prioridade} • ${m.pct}% concluído</span>
+          </div>
+          <button 
+            onclick="abrirModalDetalhesMateria(${m.id})" 
+            class="px-3 py-1 rounded-xl text-xs font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 cursor-pointer"
+          >
+            Focar
+          </button>
+        </div>
+      `).join('') || '<p class="text-xs text-slate-400">Nenhuma matéria pendente.</p>';
+    }
+
+    // ========================================================
+    // 10. MÓDULO DE REVISÕES ESPAÇADAS
+    // ========================================================
+
+    function renderizarRevisoes() {
+      const grid = document.getElementById('grid-revisoes');
+      const estadoVazio = document.getElementById('estado-vazio-revisoes');
+      if (!grid) return;
+
+      const revisoes = appState.revisoes || [];
+
+      if (revisoes.length === 0) {
+        grid.innerHTML = '';
+        estadoVazio?.classList.remove('hidden');
+        return;
+      }
+
+      estadoVazio?.classList.add('hidden');
+
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+
+      grid.innerHTML = revisoes.map(rev => {
+        let badgeStatus = '';
+        if (rev.proximaRevisao) {
+          const dataRev = new Date(rev.proximaRevisao + 'T00:00:00');
+          const diffDias = Math.ceil((dataRev - hoje) / (1000 * 60 * 60 * 24));
+
+          if (diffDias < 0) {
+            badgeStatus = '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">Atrasada</span>';
+          } else if (diffDias === 0) {
+            badgeStatus = '<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-300">Hoje!</span>';
+          } else {
+            badgeStatus = `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">Em ${diffDias} dias</span>`;
+          }
+        }
+
+        return `
+          <div class="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between space-y-4">
+            
+            <div class="space-y-2">
+              <div class="flex items-start justify-between gap-2">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+                  ${escaparHtml(rev.materiaNome)}
+                </span>
+                ${badgeStatus}
+              </div>
+
+              <h3 class="text-lg font-bold text-slate-900 leading-snug">
+                ${escaparHtml(rev.conteudo)}
+              </h3>
+
+              <div class="grid grid-cols-2 gap-2 text-xs text-slate-500 pt-2 border-t border-slate-100">
+                <div>
+                  <span class="block text-[10px] text-slate-400 font-semibold uppercase">Último Estudo</span>
+                  <span class="font-bold text-slate-700">${rev.ultimoEstudo ? formatarDataPtBr(rev.ultimoEstudo) : '--'}</span>
+                </div>
+                <div>
+                  <span class="block text-[10px] text-slate-400 font-semibold uppercase">Próxima Revisão</span>
+                  <span class="font-bold text-indigo-700">${rev.proximaRevisao ? formatarDataPtBr(rev.proximaRevisao) : '--'}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botões de Ação da Revisão -->
+            <div class="pt-3 border-t border-slate-100 flex items-center gap-2">
+              <button 
+                onclick="iniciarPomodoroParaMateria(${rev.materiaId})" 
+                class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <span>⏱️</span>
+                <span>Começar Revisão</span>
+              </button>
+
+              <button 
+                onclick="concluirRevisaoEspacada(${rev.id})" 
+                class="p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition-all cursor-pointer"
+                title="Marcar revisão como concluída e reagendar"
+              >
+                ✓
+              </button>
+
+              <button 
+                onclick="removerRevisao(${rev.id})" 
+                class="p-2.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                title="Excluir revisão"
+              >
+                ✕
+              </button>
+            </div>
+
+          </div>
+        `;
+      }).join('');
+    }
+
+    function concluirRevisaoEspacada(revisaoId) {
+      const rev = (appState.revisoes || []).find(r => r.id === revisaoId);
+      if (!rev) return;
+
+      const hoje = obterDataHojeIso();
+      rev.ultimoEstudo = hoje;
+      // Reagenda automaticamente para daqui a 5 dias (curva de repetição espaçada)
+      rev.proximaRevisao = somarDiasDataIso(hoje, 5);
+
+      salvarEstado();
+      renderizarRevisoes();
+      mostrarToast(`Revisão de "${rev.conteudo}" concluída! Próxima agendada para 5 dias. 🧠`, 'sucesso');
+    }
+
+    function removerRevisao(revisaoId) {
+      appState.revisoes = (appState.revisoes || []).filter(r => r.id !== revisaoId);
+      salvarEstado();
+      renderizarRevisoes();
+      mostrarToast('Revisão excluída.', 'info');
+    }
+
+    // ========================================================
+    // MODAIS DE CADASTRO E EDIÇÃO
+    // ========================================================
+
+    // Modal de Matéria
+    function abrirModalNovaMateria() {
+      document.getElementById('modal-materia-titulo').textContent = 'Cadastrar Matéria';
+      document.getElementById('form-materia-id').value = '';
+      document.getElementById('form-materia-nome').value = '';
+      document.getElementById('form-materia-prioridade').value = 'Média';
+      document.getElementById('form-materia-cor').value = 'indigo';
+      document.getElementById('form-materia-professor').value = '';
+      document.getElementById('form-materia-prova').value = '';
+      document.getElementById('form-materia-descricao').value = '';
+
+      document.getElementById('modal-form-materia').classList.remove('hidden');
+      document.getElementById('form-materia-nome').focus();
+    }
+
+    function abrirModalEditarMateria(materiaId) {
+      const materia = (appState.materias || []).find(m => m.id === materiaId);
+      if (!materia) return;
+
+      document.getElementById('modal-materia-titulo').textContent = 'Editar Matéria';
+      document.getElementById('form-materia-id').value = materia.id;
+      document.getElementById('form-materia-nome').value = materia.nome || '';
+      document.getElementById('form-materia-prioridade').value = materia.prioridade || 'Média';
+      document.getElementById('form-materia-cor').value = materia.cor || 'indigo';
+      document.getElementById('form-materia-professor').value = materia.professor || '';
+      document.getElementById('form-materia-prova').value = materia.proximaProva || '';
+      document.getElementById('form-materia-descricao').value = materia.descricao || '';
+
+      document.getElementById('modal-form-materia').classList.remove('hidden');
+      document.getElementById('form-materia-nome').focus();
+    }
+
+    function fecharModalFormMateria() {
+      document.getElementById('modal-form-materia').classList.add('hidden');
+    }
+
+    function salvarMateriaForm() {
+      const id = document.getElementById('form-materia-id').value;
+      const nome = document.getElementById('form-materia-nome').value.trim();
+      const prioridade = document.getElementById('form-materia-prioridade').value;
+      const cor = document.getElementById('form-materia-cor').value;
+      const professor = document.getElementById('form-materia-professor').value.trim();
+      const prova = document.getElementById('form-materia-prova').value;
+      const descricao = document.getElementById('form-materia-descricao').value.trim();
+
+      if (!nome) {
+        mostrarToast('Por favor, informe o nome da matéria.', 'aviso');
+        return;
+      }
+
+      if (id) {
+        // Edição
+        const materia = (appState.materias || []).find(m => String(m.id) === String(id));
+        if (materia) {
+          materia.nome = nome;
+          materia.prioridade = prioridade;
+          materia.cor = cor;
+          materia.professor = professor;
+          materia.proximaProva = prova;
+          materia.descricao = descricao;
+        }
+        mostrarToast(`Matéria "${nome}" atualizada!`, 'sucesso');
+      } else {
+        // Nova matéria
+        const nova = {
+          id: Date.now(),
+          nome,
+          prioridade,
+          cor,
+          professor,
+          proximaProva: prova,
+          descricao,
+          conteudos: [
+            { id: Date.now() + 1, titulo: 'Fundamentos e Conceitos Iniciais', concluido: false }
+          ]
+        };
+        appState.materias.unshift(nova);
+        mostrarToast(`Matéria "${nome}" cadastrada com sucesso!`, 'sucesso');
+      }
+
+      salvarEstado();
+      fecharModalFormMateria();
+      popularSelectsMaterias();
+      renderizarMaterias();
+      renderizarDashboard();
+      renderizarDesempenho();
+    }
+
+    function confirmarExclusaoMateria(materiaId) {
+      const materia = (appState.materias || []).find(m => m.id === materiaId);
+      if (!materia) return;
+
+      abrirModalConfirmacao(
+        `Excluir "${materia.nome}"?`,
+        'Todas as tarefas e conteúdos associados a esta matéria também serão removidos.',
+        () => {
+          appState.materias = appState.materias.filter(m => m.id !== materiaId);
+          appState.tarefas = appState.tarefas.filter(t => t.materiaId !== materiaId);
+          appState.cronograma = appState.cronograma.filter(c => c.materiaId !== materiaId);
+          appState.revisoes = appState.revisoes.filter(r => r.materiaId !== materiaId);
+
+          salvarEstado();
+          popularSelectsMaterias();
+          renderizarMaterias();
+          renderizarTarefas();
+          renderizarCronograma();
+          renderizarRevisoes();
+          renderizarDashboard();
+          renderizarDesempenho();
+          mostrarToast(`Matéria "${materia.nome}" excluída.`, 'info');
+        }
+      );
+    }
+
+    // Modal de Tarefa
+    function abrirModalNovaTarefa() {
+      if ((appState.materias || []).length === 0) {
+        mostrarToast('Cadastre pelo menos uma matéria antes de criar tarefas.', 'aviso');
+        trocarAba('materias');
+        abrirModalNovaMateria();
+        return;
+      }
+
+      document.getElementById('modal-tarefa-titulo').textContent = 'Cadastrar Tarefa';
+      document.getElementById('form-tarefa-id').value = '';
+      document.getElementById('form-tarefa-nome').value = '';
+      document.getElementById('form-tarefa-prazo').value = somarDiasDataIso(obterDataHojeIso(), 3);
+      document.getElementById('form-tarefa-prioridade').value = 'Média';
+
+      popularSelectsMaterias();
+      document.getElementById('modal-form-tarefa').classList.remove('hidden');
+      document.getElementById('form-tarefa-nome').focus();
+    }
+
+    function abrirModalEditarTarefa(tarefaId) {
+      const tarefa = (appState.tarefas || []).find(t => t.id === tarefaId);
+      if (!tarefa) return;
+
+      document.getElementById('modal-tarefa-titulo').textContent = 'Editar Tarefa';
+      document.getElementById('form-tarefa-id').value = tarefa.id;
+      document.getElementById('form-tarefa-nome').value = tarefa.nome || '';
+      document.getElementById('form-tarefa-materia').value = tarefa.materiaId || '';
+      document.getElementById('form-tarefa-prazo').value = tarefa.prazo || '';
+      document.getElementById('form-tarefa-prioridade').value = tarefa.prioridade || 'Média';
+
+      document.getElementById('modal-form-tarefa').classList.remove('hidden');
+      document.getElementById('form-tarefa-nome').focus();
+    }
+
+    function fecharModalFormTarefa() {
+      document.getElementById('modal-form-tarefa').classList.add('hidden');
+    }
+
+    function salvarTarefaForm() {
+      const id = document.getElementById('form-tarefa-id').value;
+      const nome = document.getElementById('form-tarefa-nome').value.trim();
+      const materiaId = document.getElementById('form-tarefa-materia').value;
+      const prazo = document.getElementById('form-tarefa-prazo').value;
+      const prioridade = document.getElementById('form-tarefa-prioridade').value;
+
+      if (!nome) {
+        mostrarToast('Digite o nome da tarefa.', 'aviso');
+        return;
+      }
+
+      const materia = (appState.materias || []).find(m => String(m.id) === String(materiaId));
+      const materiaNome = materia ? materia.nome : 'Geral';
+
+      if (id) {
+        const tarefa = (appState.tarefas || []).find(t => String(t.id) === String(id));
+        if (tarefa) {
+          tarefa.nome = nome;
+          tarefa.materiaId = Number(materiaId);
+          tarefa.materiaNome = materiaNome;
+          tarefa.prazo = prazo;
+          tarefa.prioridade = prioridade;
+        }
+        mostrarToast('Tarefa atualizada!', 'sucesso');
+      } else {
+        const nova = {
+          id: Date.now(),
+          nome,
+          materiaId: Number(materiaId),
+          materiaNome,
+          prazo,
+          prioridade,
+          concluida: false
+        };
+        appState.tarefas.unshift(nova);
+        mostrarToast(`Tarefa "${nome}" criada com sucesso!`, 'sucesso');
+      }
+
+      salvarEstado();
+      fecharModalFormTarefa();
+      renderizarTarefas();
+      renderizarDashboard();
+      renderizarDesempenho();
+    }
+
+    function confirmarExclusaoTarefa(tarefaId) {
+      const tarefa = (appState.tarefas || []).find(t => t.id === tarefaId);
+      if (!tarefa) return;
+
+      abrirModalConfirmacao(
+        'Excluir Tarefa?',
+        `Tem certeza que deseja remover "${tarefa.nome}"?`,
+        () => {
+          appState.tarefas = appState.tarefas.filter(t => t.id !== tarefaId);
+          salvarEstado();
+          renderizarTarefas();
+          renderizarDashboard();
+          renderizarDesempenho();
+          mostrarToast('Tarefa excluída.', 'info');
+        }
+      );
+    }
+
+    // Modal de Cronograma
+    function abrirModalNovoCronograma() {
+      if ((appState.materias || []).length === 0) {
+        mostrarToast('Cadastre pelo menos uma matéria para agendar estudos.', 'aviso');
+        trocarAba('materias');
+        return;
+      }
+      popularSelectsMaterias();
+      document.getElementById('form-crono-data').value = obterDataHojeIso();
+      document.getElementById('form-crono-conteudo').value = '';
+      document.getElementById('modal-form-cronograma').classList.remove('hidden');
+    }
+
+    function abrirModalNovoCronogramaComData(diaSemanaIndex) {
+      abrirModalNovoCronograma();
+      // Ajusta para o dia correspondente se desejado
+      document.getElementById('form-crono-conteudo').focus();
+    }
+
+    function fecharModalFormCronograma() {
+      document.getElementById('modal-form-cronograma').classList.add('hidden');
+    }
+
+    function salvarCronogramaForm() {
+      const materiaId = document.getElementById('form-crono-materia').value;
+      const conteudo = document.getElementById('form-crono-conteudo').value.trim();
+      const data = document.getElementById('form-crono-data').value;
+      const horaInicio = document.getElementById('form-crono-inicio').value;
+      const horaFim = document.getElementById('form-crono-fim').value;
+
+      if (!conteudo) {
+        mostrarToast('Informe o conteúdo que será estudado.', 'aviso');
+        return;
+      }
+
+      const materia = (appState.materias || []).find(m => String(m.id) === String(materiaId));
+      const materiaNome = materia ? materia.nome : 'Estudo';
+
+      if (!Array.isArray(appState.cronograma)) {
+        appState.cronograma = [];
+      }
+
+      appState.cronograma.push({
+        id: Date.now(),
+        materiaId: Number(materiaId),
+        materiaNome,
+        data,
+        horaInicio,
+        horaFim,
+        conteudo
+      });
+
+      salvarEstado();
+      fecharModalFormCronograma();
+      renderizarCronograma();
+      mostrarToast(`Estudo agendado para ${formatarDataPtBr(data)} às ${horaInicio}! 📅`, 'sucesso');
+    }
+
+    // Modal de Revisão
+    function abrirModalNovaRevisao() {
+      if ((appState.materias || []).length === 0) {
+        mostrarToast('Cadastre uma matéria antes de agendar revisões.', 'aviso');
+        trocarAba('materias');
+        return;
+      }
+      popularSelectsMaterias();
+      const hoje = obterDataHojeIso();
+      document.getElementById('form-revisao-ultimo-estudo').value = hoje;
+      document.getElementById('form-revisao-proxima-data').value = somarDiasDataIso(hoje, 3);
+      document.getElementById('form-revisao-conteudo').value = '';
+      document.getElementById('modal-form-revisao').classList.remove('hidden');
+      document.getElementById('form-revisao-conteudo').focus();
+    }
+
+    function fecharModalFormRevisao() {
+      document.getElementById('modal-form-revisao').classList.add('hidden');
+    }
+
+    function salvarRevisaoForm() {
+      const materiaId = document.getElementById('form-revisao-materia').value;
+      const conteudo = document.getElementById('form-revisao-conteudo').value.trim();
+      const ultimo = document.getElementById('form-revisao-ultimo-estudo').value;
+      const proxima = document.getElementById('form-revisao-proxima-data').value;
+
+      if (!conteudo) {
+        mostrarToast('Informe o conteúdo a revisar.', 'aviso');
+        return;
+      }
+
+      const materia = (appState.materias || []).find(m => String(m.id) === String(materiaId));
+      const materiaNome = materia ? materia.nome : 'Geral';
+
+      if (!Array.isArray(appState.revisoes)) {
+        appState.revisoes = [];
+      }
+
+      appState.revisoes.unshift({
+        id: Date.now(),
+        materiaId: Number(materiaId),
+        materiaNome,
+        conteudo,
+        ultimoEstudo: ultimo,
+        proximaRevisao: proxima,
+        concluida: false
+      });
+
+      salvarEstado();
+      fecharModalFormRevisao();
+      renderizarRevisoes();
+      mostrarToast(`Revisão de "${conteudo}" agendada! 🧠`, 'sucesso');
+    }
+
+    // Modal de Pomodoro Personalizado
+    function abrirModalPomodoroPersonalizado() {
+      document.getElementById('modal-pomodoro-custom').classList.remove('hidden');
+    }
+
+    function fecharModalPomodoroPersonalizado() {
+      document.getElementById('modal-pomodoro-custom').classList.add('hidden');
+    }
+
+    function aplicarPomodoroPersonalizado() {
+      const foco = parseInt(document.getElementById('input-custom-estudo').value) || 25;
+      const pausa = parseInt(document.getElementById('input-custom-pausa').value) || 5;
+
+      configurarModoPomodoro(foco, pausa, 'custom');
+      fecharModalPomodoroPersonalizado();
+      mostrarToast(`Pomodoro configurado para ${foco}min foco / ${pausa}min pausa!`, 'sucesso');
+    }
+
+    // Modal de Confirmação Genérico
+    let acaoConfirmacaoPendente = null;
+
+    function abrirModalConfirmacao(titulo, mensagem, onConfirmar) {
+      document.getElementById('confirmacao-titulo').textContent = titulo;
+      document.getElementById('confirmacao-mensagem').textContent = mensagem;
+      acaoConfirmacaoPendente = onConfirmar;
+
+      const btnConfirmar = document.getElementById('btn-confirmar-exclusao');
+      btnConfirmar.onclick = () => {
+        if (typeof acaoConfirmacaoPendente === 'function') {
+          acaoConfirmacaoPendente();
+        }
+        fecharModalConfirmacao();
+      };
+
+      document.getElementById('modal-confirmacao').classList.remove('hidden');
+    }
+
+    function fecharModalConfirmacao() {
+      document.getElementById('modal-confirmacao').classList.add('hidden');
+      acaoConfirmacaoPendente = null;
+    }
+
+    // ========================================================
+    // UTILITÁRIOS E HELPERS
+    // ========================================================
+
+    /**
+     * Atualiza os selects de matérias em todos os modais da página
+     */
+    function popularSelectsMaterias() {
+      const materias = appState.materias || [];
+
+      const selects = [
+        { id: 'filtro-materia-tarefa', incluirTodas: true },
+        { id: 'form-tarefa-materia', incluirTodas: false },
+        { id: 'form-crono-materia', incluirTodas: false },
+        { id: 'pomodoro-materia-select', incluirTodas: false },
+        { id: 'form-revisao-materia', incluirTodas: false }
+      ];
+
+      selects.forEach(conf => {
+        const el = document.getElementById(conf.id);
+        if (!el) return;
+
+        const valorAtual = el.value;
+        let html = '';
+
+        if (conf.incluirTodas) {
+          html += '<option value="todas">Todas as matérias</option>';
+        }
+
+        materias.forEach(m => {
+          html += `<option value="${m.id}">${escaparHtml(m.nome)}</option>`;
+        });
+
+        if (materias.length === 0 && !conf.incluirTodas) {
+          html = '<option value="">Nenhuma matéria cadastrada</option>';
+        }
+
+        el.innerHTML = html;
+        if (valorAtual) el.value = valorAtual;
+      });
+    }
+
+    function obterDataHojeIso() {
+      const d = new Date();
+      const ano = d.getFullYear();
+      const mes = String(d.getMonth() + 1).padStart(2, '0');
+      const dia = String(d.getDate()).padStart(2, '0');
+      return `${ano}-${mes}-${dia}`;
+    }
+
+    function somarDiasDataIso(dataIso, dias) {
+      if (!dataIso) return '';
+      const d = new Date(dataIso + 'T00:00:00');
+      d.setDate(d.getDate() + dias);
+      const ano = d.getFullYear();
+      const mes = String(d.getMonth() + 1).padStart(2, '0');
+      const dia = String(d.getDate()).padStart(2, '0');
+      return `${ano}-${mes}-${dia}`;
+    }
+
+    function formatarDataPtBr(dataIso) {
+      if (!dataIso) return '--';
+      const partes = dataIso.split('-');
+      if (partes.length === 3) {
+        return `${partes[2]}/${partes[1]}/${partes[0]}`;
+      }
+      return dataIso;
+    }
+
+    function escaparHtml(texto) {
+      if (!texto) return '';
+      const div = document.createElement('div');
+      div.textContent = texto;
+      return div.innerHTML;
+    }
+
+    let toastTimeout;
+    function mostrarToast(mensagem, tipo = 'info') {
+      const toast = document.getElementById('toast');
+      const toastTexto = document.getElementById('toast-texto');
+      const toastIcone = document.getElementById('toast-icone');
+      const toastConteudo = document.getElementById('toast-conteudo');
+
+      if (!toast || !toastTexto) return;
+
+      toastTexto.textContent = mensagem;
+
+      if (tipo === 'sucesso') {
+        toastIcone.textContent = '✓';
+        toastConteudo.className = 'flex items-center gap-3 px-4.5 py-3 rounded-2xl shadow-xl text-sm font-semibold text-emerald-950 bg-emerald-100 border border-emerald-300';
+      } else if (tipo === 'aviso') {
+        toastIcone.textContent = '⚠️';
+        toastConteudo.className = 'flex items-center gap-3 px-4.5 py-3 rounded-2xl shadow-xl text-sm font-semibold text-amber-950 bg-amber-100 border border-amber-300';
+      } else {
+        toastIcone.textContent = 'ℹ';
+        toastConteudo.className = 'flex items-center gap-3 px-4.5 py-3 rounded-2xl shadow-xl text-sm font-semibold text-white bg-slate-900 border border-slate-800';
+      }
+
+      toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+      }, 3500);
+    }
+  </script>
+</body>
+</html>
